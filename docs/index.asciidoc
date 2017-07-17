@@ -1,0 +1,5 @@
+= Githubbeat Docs
+
+Welcome to the Githubbeat documentation.
+
+
