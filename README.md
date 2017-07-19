@@ -1,5 +1,7 @@
 # Githubbeat
 
+[![Build Status](https://travis-ci.org/jlevesy/githubbeat.svg?branch=master)](https://travis-ci.org/jlevesy/githubbeat)
+
 ## Why Githubbeat ?
 
 Monitoring the activity of a project through externals services involved in the
@@ -10,8 +12,8 @@ Githubbeat was built in order to monitor the activity of various github
 repositories or even complete organizations through basic github stats like
 open issues count or number of forks.
 
-As a beat It ships everything directly to Elasticsearch or Logstash, depending
-of your needs.
+As a beat It ships everything directly to all supported outputs, depending of
+your needs.
 
 ## How to use this ?
 
