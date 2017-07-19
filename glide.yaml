@@ -1,7 +1,7 @@
 package: github.com/jlevesy/githubbeat
 import:
 - package: github.com/elastic/beats
-  version: 5.5
+  version: "5.5"
   subpackages:
   - libbeat/beat
   - libbeat/common
@@ -10,3 +10,4 @@ import:
 - package: github.com/google/go-github
   subpackages:
   - github
+- package: golang.org/x/oauth2

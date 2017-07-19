@@ -7,6 +7,8 @@ import (
 	"sync"
 	"time"
 
+	"golang.org/x/oauth2"
+
 	"github.com/elastic/beats/libbeat/beat"
 	"github.com/elastic/beats/libbeat/common"
 	"github.com/elastic/beats/libbeat/logp"
@@ -31,20 +33,48 @@ func New(b *beat.Beat, cfg *common.Config) (beat.Beater, error) {
 		return nil, fmt.Errorf("Error reading config file: %v", err)
 	}
 
-	bt := &Githubbeat{
-		done:     make(chan struct{}),
-		config:   config,
-		ghClient: github.NewClient(nil),
+	return &Githubbeat{
+		done:   make(chan struct{}),
+		config: config,
+	}, nil
+}
+
+func newGithubClient(accessToken string) (*github.Client, error) {
+	if accessToken == "" {
+		return github.NewClient(nil), nil
 	}
-	return bt, nil
+
+	ctx := context.Background()
+	ts := oauth2.StaticTokenSource(
+		&oauth2.Token{AccessToken: accessToken},
+	)
+
+	client := github.NewClient(oauth2.NewClient(ctx, ts))
+
+	if _, _, err := client.Repositories.List(ctx, "", nil); err != nil {
+		return nil, err
+	}
+
+	return client, nil
 }
 
 func (bt *Githubbeat) Run(b *beat.Beat) error {
 	logp.Info("githubbeat is running! Hit CTRL-C to stop it.")
 
 	bt.client = b.Publisher.Connect()
+
+	ghClient, err := newGithubClient(bt.config.AccessToken)
+
+	if err != nil {
+		return err
+	}
+
+	bt.ghClient = ghClient
+
 	ticker := time.NewTicker(bt.config.Period)
+
 	rootCtx, cancelRootCtx := context.WithCancel(context.Background())
+
 	for {
 		select {
 		case <-bt.done:

@@ -1,5 +1,5 @@
-hash: c318f57611c85468c4c60baba7eb31c6e8fd3f3ede60f48478e868579cb21de6
-updated: 2017-07-18T11:21:59.199424628+02:00
+hash: 48c8958685b759bfd7bb38e4127216d28803ddb9df22640d44d93659c5b05912
+updated: 2017-07-19T12:23:23.203984489+02:00
 imports:
 - name: github.com/davecgh/go-spew
   version: 5215b55f46b2b919f50a1df0eaa5886afe4e3b3d
@@ -14,7 +14,7 @@ imports:
 - name: github.com/eapache/queue
   version: ded5959c0d4e360646dc9e9908cff48666781367
 - name: github.com/elastic/beats
-  version: 85fa363bfc789395ae95a68b84b1217e006a3afc
+  version: ffb035697fb3f8c0718aff81d68b7f9eddc91d09
   subpackages:
   - libbeat/beat
   - libbeat/cfgfile
@@ -126,11 +126,16 @@ imports:
   version: d58ca6618b994150e624f6888d871f4709db51a0
   subpackages:
   - context
+  - context/ctxhttp
   - icmp
   - ipv4
   - ipv6
   - proxy
   - publicsuffix
+- name: golang.org/x/oauth2
+  version: cce311a261e6fcf29de72ca96827bdb0b7d9c9e6
+  subpackages:
+  - internal
 - name: golang.org/x/sys
   version: 62bee037599929a6e9146f29d10dd5208c43507d
   subpackages:
@@ -147,6 +152,8 @@ imports:
   - internal/log
   - internal/modules
   - internal/remote_api
+  - internal/urlfetch
+  - urlfetch
 - name: gopkg.in/yaml.v2
   version: a83829b6f1293c91addabc89d0571c246397bbf4
 testImports: []

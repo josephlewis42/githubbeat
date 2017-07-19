@@ -6,10 +6,11 @@ package config
 import "time"
 
 type Config struct {
-	Period     time.Duration `config:"period"`
-	JobTimeout time.Duration `config:"period"`
-	Repos      []string      `config:"repos"`
-	Orgs       []string      `config:"orgs"`
+	Period      time.Duration `config:"period"`
+	JobTimeout  time.Duration `config:"period"`
+	Repos       []string      `config:"repos"`
+	Orgs        []string      `config:"orgs"`
+	AccessToken string        `config:"access_token"`
 }
 
 var DefaultConfig = Config{
