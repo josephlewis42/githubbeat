@@ -1,55 +1,39 @@
 # Githubbeat
 
-Welcome to Githubbeat.
+## Why Githubbeat ?
 
-Ensure that this folder is at the following location:
-`${GOPATH}/github.com/jlevesy/githubbeat`
+Monitoring the activity of a project through externals services involved in the
+lifetime of an opensource project can provide important insights about its
+health and the activity of its community.
 
-## Getting Started with Githubbeat
+Githubbeat was built in order to monitor the activity of various github
+repositories or even complete organizations through basic github stats like
+open issues count or number of forks.
 
-### Requirements
+As a beat It ships everything directly to Elasticsearch or Logstash, depending
+of your needs.
 
-* [Golang](https://golang.org/dl/) 1.7
+## How to use this ?
 
-### Init Project
-To get running with Githubbeat and also install the
-dependencies, run the following command:
-
-```
-make setup
-```
-
-It will create a clean git history for each major step. Note that you can always rewrite the history if you wish before pushing your changes.
-
-To push Githubbeat in the git repository, run the following commands:
+To run Githubbeats, simply use:
 
 ```
-git remote set-url origin https://github.com/jlevesy/githubbeat
-git push origin master
+# -e logs to stdeer and disables syslog/file output
+./githubbeat -c <path_to_your_githubbeat.yml> -e
 ```
 
-For further development, check out the [beat developer guide](https://www.elastic.co/guide/en/beats/libbeat/current/new-beat.html).
+## Building
 
-### Build
+This beater was built according to the [beat developer guide](https://www.elastic.co/guide/en/beats/libbeat/current/new-beat.html) and thus uses the pre-defined build system.
 
-To build the binary for Githubbeat run the command below. This will generate a binary
-in the same directory with the name githubbeat.
+With the appropriate dependencies this will generate a binary in the same
+directory..
 
 ```
 make
 ```
 
-
-### Run
-
-To run Githubbeat with debugging output enabled, run:
-
-```
-./githubbeat -c githubbeat.yml -e -d "*"
-```
-
-
-### Test
+## Test
 
 To test Githubbeat, run the following command:
 
@@ -57,63 +41,11 @@ To test Githubbeat, run the following command:
 make testsuite
 ```
 
-alternatively:
-```
-make unit-tests
-make system-tests
-make integration-tests
-make coverage-report
-```
+## Todo
 
-The test coverage is reported in the folder `./build/coverage/`
+- [ ] Export total opened PRs
+- [ ] Export total commit count per repository
+- [ ] Export releases count per repository
+- [ ] Export branches count per repository
 
-### Update
-
-Each beat has a template for the mapping in elasticsearch and a documentation for the fields
-which is automatically generated based on `etc/fields.yml`.
-To generate etc/githubbeat.template.json and etc/githubbeat.asciidoc
-
-```
-make update
-```
-
-
-### Cleanup
-
-To clean  Githubbeat source code, run the following commands:
-
-```
-make fmt
-make simplify
-```
-
-To clean up the build directory and generated artifacts, run:
-
-```
-make clean
-```
-
-
-### Clone
-
-To clone Githubbeat from the git repository, run the following commands:
-
-```
-mkdir -p ${GOPATH}/github.com/jlevesy/githubbeat
-cd ${GOPATH}/github.com/jlevesy/githubbeat
-git clone https://github.com/jlevesy/githubbeat
-```
-
-
-For further development, check out the [beat developer guide](https://www.elastic.co/guide/en/beats/libbeat/current/new-beat.html).
-
-
-## Packaging
-
-The beat frameworks provides tools to crosscompile and package your beat for different platforms. This requires [docker](https://www.docker.com/) and vendoring as described above. To build packages of your beat, run the following command:
-
-```
-make package
-```
-
-This will fetch and create all images required for the build process. The hole process to finish can take several minutes.
+Of course, any suggestions are welcome !
