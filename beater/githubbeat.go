@@ -3,6 +3,8 @@ package beater
 import (
 	"context"
 	"fmt"
+	"strings"
+	"sync"
 	"time"
 
 	"github.com/elastic/beats/libbeat/beat"
@@ -42,7 +44,6 @@ func (bt *Githubbeat) Run(b *beat.Beat) error {
 
 	bt.client = b.Publisher.Connect()
 	ticker := time.NewTicker(bt.config.Period)
-	counter := 1
 	rootCtx, cancelRootCtx := context.WithCancel(context.Background())
 	for {
 		select {
@@ -50,21 +51,10 @@ func (bt *Githubbeat) Run(b *beat.Beat) error {
 			cancelRootCtx()
 			return nil
 		case <-ticker.C:
-			jobCtx, jobCancel := context.WithTimeout(rootCtx, 10*time.Second)
-			defer jobCancel()
-
-			event, err := bt.collectRepoEvent(jobCtx, "containous", "traefik")
-
-			if err != nil {
-				logp.Err("Failed to collect events, got", err)
-				jobCancel()
-				break
-			}
-
-			bt.client.PublishEvent(event)
+			jobCtx, jobCancel := context.WithTimeout(rootCtx, bt.config.JobTimeout)
+			bt.collectReposEvent(jobCtx, bt.config.Repos)
+			jobCancel()
 		}
-
-		counter++
 	}
 }
 
@@ -73,28 +63,56 @@ func (bt *Githubbeat) Stop() {
 	close(bt.done)
 }
 
-func (bt *Githubbeat) collectRepoEvent(ctx context.Context, owner, repo string) (common.MapStr, error) {
-	r, _, err := bt.ghClient.Repositories.Get(ctx, owner, repo)
+func (bt *Githubbeat) collectReposEvent(ctx context.Context, repos []string) {
+	out := make(chan common.MapStr, len(repos))
+	wg := sync.WaitGroup{}
 
-	if err != nil {
-		return common.MapStr{}, err
+	wg.Add(len(repos))
+
+	for _, repoName := range repos {
+		go func(ctx context.Context, repoName string, out chan<- common.MapStr, wg *sync.WaitGroup) {
+			r := strings.Split(repoName, "/")
+
+			if len(r) != 2 {
+				logp.Err("Invalid repo name format, expected [org]/[name]")
+				wg.Done()
+				return
+			}
+
+			res, _, err := bt.ghClient.Repositories.Get(ctx, r[0], r[1])
+
+			if err != nil {
+				logp.Err("Failed to collect event, got :", err)
+				wg.Done()
+				return
+			}
+
+			out <- bt.newRepoEvent(res)
+			wg.Done()
+		}(ctx, repoName, out, &wg)
 	}
 
-	return bt.newRepoEvent(r), nil
+	wg.Wait()
+
+	close(out)
+
+	for event := range out {
+		bt.client.PublishEvent(event)
+	}
 }
 
 func (Githubbeat) newRepoEvent(repo *github.Repository) common.MapStr {
 	return common.MapStr{
-		"@timestamp":   common.Time(time.Now()),
-		"type":         "githubbeat",
-		"repo":         repo.GetName(),
-		"organization": repo.Organization.GetLogin(),
-		"stargazers":   repo.GetStargazersCount(),
-		"forks":        repo.GetForksCount(),
-		"watchers":     repo.GetWatchersCount(),
-		"issues":       repo.GetOpenIssuesCount(),
-		"subscribers":  repo.GetSubscribersCount(),
-		"network":      repo.GetNetworkCount(),
-		"size":         repo.GetSize(),
+		"@timestamp":  common.Time(time.Now()),
+		"type":        "githubbeat",
+		"repo":        repo.GetName(),
+		"owner":       repo.Owner.GetLogin(),
+		"stargazers":  repo.GetStargazersCount(),
+		"forks":       repo.GetForksCount(),
+		"watchers":    repo.GetWatchersCount(),
+		"issues":      repo.GetOpenIssuesCount(),
+		"subscribers": repo.GetSubscribersCount(),
+		"network":     repo.GetNetworkCount(),
+		"size":        repo.GetSize(),
 	}
 }

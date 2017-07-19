@@ -2,8 +2,8 @@
   title: githubbeat
   description:
   fields:
-    - name: counter
-      type: long
+    - name: repo
+      type: string
       required: true
       description: >
-        PLEASE UPDATE DOCUMENTATION
+          Repository name
