@@ -45,7 +45,7 @@
             }
           }
         },
-        "counter": {
+        "forks": {
           "type": "long"
         },
         "meta": {
@@ -86,10 +86,42 @@
             }
           }
         },
+        "network": {
+          "type": "long"
+        },
+        "open_issues": {
+          "type": "long"
+        },
+        "owner": {
+          "index": "analyzed",
+          "norms": {
+            "enabled": false
+          },
+          "type": "string"
+        },
+        "repo": {
+          "index": "analyzed",
+          "norms": {
+            "enabled": false
+          },
+          "type": "string"
+        },
+        "size": {
+          "type": "long"
+        },
+        "stargazers": {
+          "type": "long"
+        },
+        "subscribers": {
+          "type": "long"
+        },
         "tags": {
           "ignore_above": 1024,
           "index": "not_analyzed",
           "type": "string"
+        },
+        "watchers": {
+          "type": "long"
         }
       }
     }

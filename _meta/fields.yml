@@ -3,7 +3,47 @@
   description:
   fields:
     - name: repo
-      type: string
+      type: text
       required: true
       description: >
           Repository name
+    - name: owner
+      type: text
+      required: true
+      description: >
+          Repository owner
+    - name: stargazers
+      type: integer
+      required: true
+      description: >
+          Current stargazers count
+    - name: forks
+      type: integer
+      required: true
+      description: >
+          Current forks count
+    - name: watchers
+      type: integer
+      required: true
+      description: >
+          Current watchers count
+    - name: open_issues
+      type: integer
+      required: true
+      description: >
+          Current open issues count
+    - name: subscribers
+      type: integer
+      required: true
+      description: >
+          Current subscribers count
+    - name: network
+      type: integer
+      required: true
+      description: >
+          Current network count
+    - name: size
+      type: integer
+      required: true
+      description: >
+          Current repo size (bytes)

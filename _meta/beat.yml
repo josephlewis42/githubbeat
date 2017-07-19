@@ -5,3 +5,15 @@
 githubbeat:
   # Defines how often an event is sent to the output
   period: 1s
+  # Defines how much time a fetch should at most take
+  job_timeout: 10s
+  # List of individual repositories to watch
+  # Expected format is [owner]/[repo]
+  repos:
+      - elastic/beats
+  # List of individual organisations to watch
+  orgs:
+      - google
+      - containous
+  # Access token to use for authentication
+  access_token: ""

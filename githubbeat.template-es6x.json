@@ -36,7 +36,7 @@
             }
           }
         },
-        "counter": {
+        "forks": {
           "type": "long"
         },
         "meta": {
@@ -71,9 +71,35 @@
             }
           }
         },
+        "network": {
+          "type": "long"
+        },
+        "open_issues": {
+          "type": "long"
+        },
+        "owner": {
+          "norms": false,
+          "type": "text"
+        },
+        "repo": {
+          "norms": false,
+          "type": "text"
+        },
+        "size": {
+          "type": "long"
+        },
+        "stargazers": {
+          "type": "long"
+        },
+        "subscribers": {
+          "type": "long"
+        },
         "tags": {
           "ignore_above": 1024,
           "type": "keyword"
+        },
+        "watchers": {
+          "type": "long"
         }
       }
     }

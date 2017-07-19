@@ -128,12 +128,92 @@ None
 
 
 [float]
-=== counter
+=== repo
 
-type: long
+type: text
 
 required: True
 
-PLEASE UPDATE DOCUMENTATION
+Repository name
+
+
+[float]
+=== owner
+
+type: text
+
+required: True
+
+Repository owner
+
+
+[float]
+=== stargazers
+
+type: integer
+
+required: True
+
+Current stargazers count
+
+
+[float]
+=== forks
+
+type: integer
+
+required: True
+
+Current forks count
+
+
+[float]
+=== watchers
+
+type: integer
+
+required: True
+
+Current watchers count
+
+
+[float]
+=== open_issues
+
+type: integer
+
+required: True
+
+Current open issues count
+
+
+[float]
+=== subscribers
+
+type: integer
+
+required: True
+
+Current subscribers count
+
+
+[float]
+=== network
+
+type: integer
+
+required: True
+
+Current network count
+
+
+[float]
+=== size
+
+type: integer
+
+required: True
+
+Current repo size (bytes)
 
 

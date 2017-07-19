@@ -19,6 +19,7 @@ import (
 	"github.com/jlevesy/githubbeat/config"
 )
 
+// Githubbeat collects github repositories statistics
 type Githubbeat struct {
 	done     chan struct{}
 	config   config.Config
@@ -26,7 +27,7 @@ type Githubbeat struct {
 	client   publisher.Client
 }
 
-// Creates beater
+// New creates  a new instance of a GithubBeat
 func New(b *beat.Beat, cfg *common.Config) (beat.Beater, error) {
 	config := config.DefaultConfig
 	if err := cfg.Unpack(&config); err != nil {
@@ -39,25 +40,7 @@ func New(b *beat.Beat, cfg *common.Config) (beat.Beater, error) {
 	}, nil
 }
 
-func newGithubClient(accessToken string) (*github.Client, error) {
-	if accessToken == "" {
-		return github.NewClient(nil), nil
-	}
-
-	ctx := context.Background()
-	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: accessToken},
-	)
-
-	client := github.NewClient(oauth2.NewClient(ctx, ts))
-
-	if _, _, err := client.Repositories.List(ctx, "", nil); err != nil {
-		return nil, err
-	}
-
-	return client, nil
-}
-
+// Run runs the beat
 func (bt *Githubbeat) Run(b *beat.Beat) error {
 	logp.Info("githubbeat is running! Hit CTRL-C to stop it.")
 
@@ -83,6 +66,7 @@ func (bt *Githubbeat) Run(b *beat.Beat) error {
 		case <-ticker.C:
 			jobCtx, jobCancel := context.WithTimeout(rootCtx, bt.config.JobTimeout)
 			defer jobCancel()
+
 			if len(bt.config.Repos) > 0 {
 				go bt.collectReposEvents(jobCtx, bt.config.Repos)
 			}
@@ -94,9 +78,29 @@ func (bt *Githubbeat) Run(b *beat.Beat) error {
 	}
 }
 
+// Stop stops the running beat
 func (bt *Githubbeat) Stop() {
 	bt.client.Close()
 	close(bt.done)
+}
+
+func newGithubClient(accessToken string) (*github.Client, error) {
+	if accessToken == "" {
+		return github.NewClient(nil), nil
+	}
+
+	ctx := context.Background()
+	ts := oauth2.StaticTokenSource(
+		&oauth2.Token{AccessToken: accessToken},
+	)
+
+	client := github.NewClient(oauth2.NewClient(ctx, ts))
+
+	if _, _, err := client.Repositories.List(ctx, "", nil); err != nil {
+		return nil, err
+	}
+
+	return client, nil
 }
 
 func (bt *Githubbeat) collectOrgsEvents(ctx context.Context, orgs []string) {
@@ -176,7 +180,7 @@ func (Githubbeat) newRepoEvent(repo *github.Repository) common.MapStr {
 		"stargazers":  repo.GetStargazersCount(),
 		"forks":       repo.GetForksCount(),
 		"watchers":    repo.GetWatchersCount(),
-		"issues":      repo.GetOpenIssuesCount(),
+		"open_issues": repo.GetOpenIssuesCount(),
 		"subscribers": repo.GetSubscribersCount(),
 		"network":     repo.GetNetworkCount(),
 		"size":        repo.GetSize(),
