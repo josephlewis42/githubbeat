@@ -52,8 +52,14 @@ func (bt *Githubbeat) Run(b *beat.Beat) error {
 			return nil
 		case <-ticker.C:
 			jobCtx, jobCancel := context.WithTimeout(rootCtx, bt.config.JobTimeout)
-			bt.collectReposEvent(jobCtx, bt.config.Repos)
-			jobCancel()
+			defer jobCancel()
+			if len(bt.config.Repos) > 0 {
+				go bt.collectReposEvents(jobCtx, bt.config.Repos)
+			}
+
+			if len(bt.config.Orgs) > 0 {
+				go bt.collectOrgsEvents(jobCtx, bt.config.Orgs)
+			}
 		}
 	}
 }
@@ -63,18 +69,48 @@ func (bt *Githubbeat) Stop() {
 	close(bt.done)
 }
 
-func (bt *Githubbeat) collectReposEvent(ctx context.Context, repos []string) {
+func (bt *Githubbeat) collectOrgsEvents(ctx context.Context, orgs []string) {
+	out := make(chan []*github.Repository, len(orgs))
+	wg := sync.WaitGroup{}
+	wg.Add(len(orgs))
+
+	for _, org := range orgs {
+		go func(ctx context.Context, org string, out chan<- []*github.Repository, wg *sync.WaitGroup) {
+			res, _, err := bt.ghClient.Repositories.ListByOrg(ctx, org, nil)
+
+			if err != nil {
+				logp.Err("Failed to collect org repos listing, got :", err)
+				wg.Done()
+				return
+			}
+
+			out <- res
+			wg.Done()
+		}(ctx, org, out, &wg)
+	}
+
+	wg.Wait()
+	close(out)
+
+	for repos := range out {
+		for _, repo := range repos {
+			bt.client.PublishEvent(bt.newRepoEvent(repo))
+		}
+	}
+}
+
+func (bt *Githubbeat) collectReposEvents(ctx context.Context, repos []string) {
 	out := make(chan common.MapStr, len(repos))
 	wg := sync.WaitGroup{}
 
 	wg.Add(len(repos))
 
 	for _, repoName := range repos {
-		go func(ctx context.Context, repoName string, out chan<- common.MapStr, wg *sync.WaitGroup) {
-			r := strings.Split(repoName, "/")
+		go func(ctx context.Context, repo string, out chan<- common.MapStr, wg *sync.WaitGroup) {
+			r := strings.Split(repo, "/")
 
 			if len(r) != 2 {
-				logp.Err("Invalid repo name format, expected [org]/[name]")
+				logp.Err("Invalid repo name format, expected [org]/[name], got: ", repo)
 				wg.Done()
 				return
 			}

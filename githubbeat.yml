@@ -5,10 +5,12 @@
 githubbeat:
   # Defines how often an event is sent to the output
   period: 10s
-  repos:
-    - containous/traefik
-    - containous/staert
-    - tata
+  orgs:
+      - containous
+  # repos:
+  #   - containous/traefik
+  #   - containous/staert
+  #   - tata
 
 #================================ General =====================================
 

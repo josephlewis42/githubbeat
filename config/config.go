@@ -9,9 +9,10 @@ type Config struct {
 	Period     time.Duration `config:"period"`
 	JobTimeout time.Duration `config:"period"`
 	Repos      []string      `config:"repos"`
+	Orgs       []string      `config:"orgs"`
 }
 
 var DefaultConfig = Config{
-	Period:     1 * time.Second,
+	Period:     30 * time.Second,
 	JobTimeout: 10 * time.Second,
 }
