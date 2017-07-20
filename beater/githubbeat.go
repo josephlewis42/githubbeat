@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"strings"
-	"sync"
 	"time"
 
 	"golang.org/x/oauth2"
@@ -64,16 +63,11 @@ func (bt *Githubbeat) Run(b *beat.Beat) error {
 			cancelRootCtx()
 			return nil
 		case <-ticker.C:
+			logp.Info("Collecting events.")
 			jobCtx, jobCancel := context.WithTimeout(rootCtx, bt.config.JobTimeout)
 			defer jobCancel()
-
-			if len(bt.config.Repos) > 0 {
-				go bt.collectReposEvents(jobCtx, bt.config.Repos)
-			}
-
-			if len(bt.config.Orgs) > 0 {
-				go bt.collectOrgsEvents(jobCtx, bt.config.Orgs)
-			}
+			bt.collectReposEvents(jobCtx, bt.config.Repos)
+			bt.collectOrgsEvents(jobCtx, bt.config.Orgs)
 		}
 	}
 }
@@ -86,8 +80,11 @@ func (bt *Githubbeat) Stop() {
 
 func newGithubClient(accessToken string) (*github.Client, error) {
 	if accessToken == "" {
+		logp.Info("Running in unauthentcated mode.")
 		return github.NewClient(nil), nil
 	}
+
+	logp.Info("Running in authentcated mode.")
 
 	ctx := context.Background()
 	ts := oauth2.StaticTokenSource(
@@ -104,48 +101,29 @@ func newGithubClient(accessToken string) (*github.Client, error) {
 }
 
 func (bt *Githubbeat) collectOrgsEvents(ctx context.Context, orgs []string) {
-	out := make(chan []*github.Repository, len(orgs))
-	wg := sync.WaitGroup{}
-	wg.Add(len(orgs))
-
 	for _, org := range orgs {
-		go func(ctx context.Context, org string, out chan<- []*github.Repository, wg *sync.WaitGroup) {
-			res, _, err := bt.ghClient.Repositories.ListByOrg(ctx, org, nil)
+		go func(ctx context.Context, org string) {
+			repos, _, err := bt.ghClient.Repositories.ListByOrg(ctx, org, nil)
 
 			if err != nil {
 				logp.Err("Failed to collect org repos listing, got :", err)
-				wg.Done()
 				return
 			}
 
-			out <- res
-			wg.Done()
-		}(ctx, org, out, &wg)
-	}
-
-	wg.Wait()
-	close(out)
-
-	for repos := range out {
-		for _, repo := range repos {
-			bt.client.PublishEvent(bt.newRepoEvent(repo))
-		}
+			for _, repo := range repos {
+				bt.client.PublishEvent(bt.newRepoEvent(repo))
+			}
+		}(ctx, org)
 	}
 }
 
 func (bt *Githubbeat) collectReposEvents(ctx context.Context, repos []string) {
-	out := make(chan common.MapStr, len(repos))
-	wg := sync.WaitGroup{}
-
-	wg.Add(len(repos))
-
 	for _, repoName := range repos {
-		go func(ctx context.Context, repo string, out chan<- common.MapStr, wg *sync.WaitGroup) {
+		go func(ctx context.Context, repo string) {
 			r := strings.Split(repo, "/")
 
 			if len(r) != 2 {
 				logp.Err("Invalid repo name format, expected [org]/[name], got: ", repo)
-				wg.Done()
 				return
 			}
 
@@ -153,21 +131,11 @@ func (bt *Githubbeat) collectReposEvents(ctx context.Context, repos []string) {
 
 			if err != nil {
 				logp.Err("Failed to collect event, got :", err)
-				wg.Done()
 				return
 			}
 
-			out <- bt.newRepoEvent(res)
-			wg.Done()
-		}(ctx, repoName, out, &wg)
-	}
-
-	wg.Wait()
-
-	close(out)
-
-	for event := range out {
-		bt.client.PublishEvent(event)
+			bt.client.PublishEvent(bt.newRepoEvent(res))
+		}(ctx, repoName)
 	}
 }
 

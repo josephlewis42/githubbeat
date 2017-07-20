@@ -4,7 +4,7 @@
 
 githubbeat:
   # Defines how often an event is sent to the output
-  period: 1s
+  period: 30s
   # Defines how much time a fetch should at most take
   job_timeout: 10s
   # List of individual repositories to watch
