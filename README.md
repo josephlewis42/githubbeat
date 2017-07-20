@@ -2,6 +2,11 @@
 
 [![Build Status](https://travis-ci.org/jlevesy/githubbeat.svg?branch=master)](https://travis-ci.org/jlevesy/githubbeat)
 
+This is currently a work in progress.
+
+At the momment I have a working POC, but it is not well tested, packaged nor documented.
+Please have a look in the [TODO](https://github.com/jlevesy/githubbeat#todo)  section to see what I plan to do ;)
+
 ## Why Githubbeat ?
 
 Monitoring the activity of a project through externals services involved in the
