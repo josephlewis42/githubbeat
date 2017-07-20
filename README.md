@@ -26,15 +26,17 @@ TODO
 
 ## Todo
 
-- [ ] Open a PR to add Githubbeat to the community beats.
-- [ ] Write unit tests and integration tests on Githubbeat
+- [x] Write a proof of concept
+- [x] Enable CI
+- [x] Open a PR to add Githubbeat to the community beats [#4723](https://github.com/elastic/beats/pull/4723).
+- [ ] Write unit tests and integration tests
 - [ ] Setup Delivery pipeline in order to publish new releases of githubbeat automatically through Github.
   - Targets
     - DEB 32/64
     - RPM 32/64
     - OSX
     - Docker image
-- [ ] Setup a test environment through docker-compose with githubbeat, es & kibana
+- [ ] Setup a test environment using docker-compose with githubbeat, es & kibana
 - [ ] Build a githubbeat kibana dashboard
 - [ ] Write documentation about how to use the beat
 
