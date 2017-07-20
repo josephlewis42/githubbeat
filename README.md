@@ -17,33 +17,23 @@ your needs.
 
 ## How to use this ?
 
-To run Githubbeats, simply use:
-
-```
-# -e logs to stdeer and disables syslog/file output
-./githubbeat -c <path_to_your_githubbeat.yml> -e
-```
-
-## Building
-
-This beater was built according to the [beat developer guide](https://www.elastic.co/guide/en/beats/libbeat/current/new-beat.html) and thus uses the pre-defined build system.
-
-With the appropriate dependencies this will generate a binary in the same
-directory..
-
-```
-make
-```
-
-## Test
-
-To test Githubbeat, run the following command:
-
-```
-make testsuite
-```
+TODO
 
 ## Todo
+
+- [ ] Open a PR to add Githubbeat to the community beats.
+- [ ] Write unit tests and integration tests on Githubbeat
+- [ ] Setup Delivery pipeline in order to publish new releases of githubbeat automatically through Github.
+  - Targets
+    - DEB 32/64
+    - RPM 32/64
+    - OSX
+    - Docker image
+- [ ] Setup a test environment through docker-compose with githubbeat, es & kibana
+- [ ] Build a githubbeat kibana dashboard
+- [ ] Write documentation about how to use the beat
+
+## Feature ideas
 
 - [ ] Export total opened PRs
 - [ ] Export total commit count per repository
