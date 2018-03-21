@@ -203,13 +203,6 @@ func (bt *Githubbeat) newFullRepoEvent(ctx context.Context, repo *github.Reposit
 	return data
 }
 
-// TODO languages
-
-// TODO participation
-// TODO downloads
-// https://godoc.org/github.com/google/go-github/github#RepositoriesService.ListReleaseAssets
-//func (s *RepositoriesService) ListReleaseAssets(ctx context.Context, owner, repo string, id int64, opt *ListOptions) ([]*ReleaseAsset, *Response, error)
-
 func (bt *Githubbeat) extractRepoData(repo *github.Repository) common.MapStr {
 	return common.MapStr{
 		"repo":        repo.GetName(),
