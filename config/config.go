@@ -11,8 +11,8 @@ type Config struct {
 	Repos       []string      `config:"repos"`
 	Orgs        []string      `config:"orgs"`
 	AccessToken string        `config:"access_token"`
-	Forks       ListConfig    `config:"forks"`
 
+	Forks         ListConfig     `config:"forks"`
 	License       ExtendedConfig `config:"license"`
 	Contributors  ListConfig     `config:"contributors"`
 	Branches      ListConfig     `config:"branches"`
