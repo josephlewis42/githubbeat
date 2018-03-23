@@ -154,7 +154,7 @@ func (bt *Githubbeat) getContributions(owner, repository string, ctx context.Con
 		}
 	}
 
-	return createListMapStr(users, err)
+	return createListMapStr(users, err, bt.config.Contributors.List)
 }
 
 func (bt *Githubbeat) getBranches(owner, repository string, ctx context.Context) common.MapStr {
@@ -173,8 +173,10 @@ func (bt *Githubbeat) getBranches(owner, repository string, ctx context.Context)
 		}
 	}
 
-	return createListMapStr(branchList, err)
+	return createListMapStr(branchList, err, bt.config.Branches.List)
 }
+
+type collector func(owner, repository string, ctx context.Context) common.MapStr
 
 func (bt *Githubbeat) newFullRepoEvent(ctx context.Context, repo *github.Repository) common.MapStr {
 
@@ -188,13 +190,19 @@ func (bt *Githubbeat) newFullRepoEvent(ctx context.Context, repo *github.Reposit
 	owner := repo.Owner.GetLogin()
 	repository := repo.GetName()
 
-	data["license"] = bt.collectLicenseInfo(owner, repository, ctx)
-	data["fork_list"] = bt.collectForkInfo(owner, repository, ctx)
-	data["contributor_list"] = bt.getContributions(owner, repository, ctx)
-	data["branch_list"] = bt.getBranches(owner, repository, ctx)
-	data["languages"] = bt.collectLanguageInfo(owner, repository, ctx)
-	data["participation"] = bt.collectParticipation(owner, repository, ctx)
-	data["downloads"] = bt.collectDownloads(owner, repository, ctx)
+	addIf := func(key string, c collector, condition bool) {
+		if condition {
+			data[key] = c(owner, repository, ctx)
+		}
+	}
+
+	addIf("license", bt.collectLicenseInfo, bt.config.License.Enabled)
+	addIf("fork_list", bt.collectForkInfo, bt.config.Forks.Enabled)
+	addIf("contributor_list", bt.getContributions, bt.config.Contributors.Enabled)
+	addIf("branch_list", bt.getBranches, bt.config.Branches.Enabled)
+	addIf("languages", bt.collectLanguageInfo, bt.config.Languages.Enabled)
+	addIf("participation", bt.collectParticipation, bt.config.Participation.Enabled)
+	addIf("downloads", bt.collectDownloads, bt.config.Downloads.Enabled)
 
 	return data
 }
@@ -231,7 +239,7 @@ func (bt *Githubbeat) collectLanguageInfo(owner, repository string, ctx context.
 		})
 	}
 
-	return createListMapStr(out, err)
+	return createListMapStr(out, err, bt.config.Languages.List)
 }
 
 func (bt *Githubbeat) collectForkInfo(owner, repository string, ctx context.Context) common.MapStr {
@@ -242,7 +250,7 @@ func (bt *Githubbeat) collectForkInfo(owner, repository string, ctx context.Cont
 		forkInfo = append(forkInfo, bt.extractRepoData(repo))
 	}
 
-	return createListMapStr(forkInfo, err)
+	return createListMapStr(forkInfo, err, bt.config.Forks.List)
 }
 
 func (bt *Githubbeat) collectLicenseInfo(owner, repository string, ctx context.Context) common.MapStr {
@@ -317,12 +325,14 @@ func (bt *Githubbeat) collectDownloads(owner, repository string, ctx context.Con
 	}
 }
 
-func createListMapStr(list []common.MapStr, err error) common.MapStr {
-	return common.MapStr{
-		"count": len(list),
-		"list":  list,
-		"error": err,
+func createListMapStr(list []common.MapStr, err error, enableList bool) common.MapStr {
+	out := common.MapStr{"count": len(list), "error": err}
+
+	if enableList {
+		out["list"] = list
 	}
+
+	return out
 }
 
 func appendError(input common.MapStr, err error) common.MapStr {
