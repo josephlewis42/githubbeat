@@ -2,48 +2,201 @@
   title: githubbeat
   description:
   fields:
-    - name: repo
-      type: text
-      required: true
-      description: >
-          Repository name
-    - name: owner
-      type: text
-      required: true
-      description: >
-          Repository owner
-    - name: stargazers
+    - name: branch_list.count
       type: integer
-      required: true
       description: >
-          Current stargazers count
+        Number of branches
+    - name: branch_list.error
+      type: text
+      description: >
+        Error message when failing to retrieve branches
+    - name: branch_list.list
+      type: nested
+      description: >
+        List of branches
+      fields:
+        - name: name
+          type: keyword
+          required: true
+        - name: sha
+          type: keyword
+          required: true
+    - name: contributor_list.count
+      type: integer
+      description: >
+        Number of countributors
+    - name: contributor_list.list
+      type: nested
+      description: >
+        List of countributors
+      fields:
+        - name: name
+          type: keyword
+          required: true
+        - name: contributions
+          type: integer
+          required: true
+    - name: contributor_list.error
+      type: text
+      description: >
+        Error message when failing to retrieve countributors
+    - name: downloads.releases
+      type: nested
+      description: >
+        Number of downloads per releases
+      fields:
+        - name: id
+          type: keyword
+          required: true
+        - name: name
+          type: keyword
+          required: true
+        - name: downloads
+          type: integer
+          required: true
+    - name: downloads.total_downloads
+      type: integer
+      description: >
+        Total number of downloads for all releases
+    - name: downloads.error
+      type: text
+      description: >
+        Error message when failing to retrieve downloads
+    - name: fork_list.count
+      type: integer
+      description: >
+        Number of forks
+    - name: fork_list.error
+      type: text
+      description: >
+        Error message when failing to retrieve forks
+    - name: fork_list.list
+      type: nested
+      description: >
+        List of forks
+      fields:
+        - name: forks
+          type: integer
+          required: true
+        - name: network
+          type: integer
+          required: true
+        - name: open_issues
+          type: integer
+          required: true
+        - name: owner
+          type: keyword
+          required: true
+        - name: repo
+          type: keyword
+          required: true
+        - name: size
+          type: integer
+          required: true
+        - name: stargazers
+          type: integer
+          required: true
+        - name: subscribers
+          type: integer
+          required: true
+        - name: watchers
+          type: integer
+          required: true
     - name: forks
       type: integer
       required: true
       description: >
-          Current forks count
-    - name: watchers
+        Number of forks
+    - name: languages.count
       type: integer
-      required: true
       description: >
-          Current watchers count
-    - name: open_issues
-      type: integer
-      required: true
+        Number of programming languages used in this repo
+    - name: languages.error
+      type: text
       description: >
-          Current open issues count
-    - name: subscribers
-      type: integer
-      required: true
+        Error message when failing to retrieve programming languages
+    - name: languages.list
+      type: nested
       description: >
-          Current subscribers count
+        List of programming languages used in this repo
+      fields:
+        - name: bytes
+          type: integer
+          required: true
+        - name: name
+          type: keyword
+          required: true
+        - name: ratio
+          type: float
+          required: true
+    - name: license
+      type: group
+      description:
+        License information
+      fields:
+        - name: key
+          type: keyword
+        - name: name
+          type: keyword
+        - name: path
+          type: keyword
+        - name: sha
+          type: keyword
+        - name: spdx_id
+          type: keyword
     - name: network
       type: integer
       required: true
       description: >
-          Current network count
+        Current network count
+    - name: open_issues
+      type: integer
+      required: true
+      description: >
+        Current open issues count
+    - name: owner
+      type: keyword
+      required: true
+      description: >
+        Repository owner
+    - name: participation
+      type: group
+      required: true
+      description: >
+        Participation data
+      fields:
+        - name: all
+          type: integer
+        - name: community
+          type: integer
+        - name: owner
+          type: integer
+        - name: period
+          type: keyword
+        - name: error
+          type: text
+    - name: repo
+      type: keyword
+      required: true
+      description: >
+        Repository name
     - name: size
       type: integer
       required: true
       description: >
-          Current repo size (bytes)
+        Current repo size (bytes)
+    - name: stargazers
+      type: integer
+      required: true
+      description: >
+        Current stargazers count
+    - name: subscribers
+      type: integer
+      required: true
+      description: >
+        Current subscribers count
+    - name: watchers
+      type: integer
+      required: true
+      description: >
+        Current watchers count
