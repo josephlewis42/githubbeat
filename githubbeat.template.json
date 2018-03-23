@@ -39,8 +39,177 @@
             }
           }
         },
+        "branch_list": {
+          "properties": {
+            "count": {
+              "type": "long"
+            },
+            "error": {
+              "norms": false,
+              "type": "text"
+            },
+            "list": {
+              "properties": {
+                "name": {
+                  "ignore_above": 1024,
+                  "type": "keyword"
+                },
+                "sha": {
+                  "ignore_above": 1024,
+                  "type": "keyword"
+                }
+              },
+              "type": "nested"
+            }
+          }
+        },
+        "contributor_list": {
+          "properties": {
+            "count": {
+              "type": "long"
+            },
+            "error": {
+              "norms": false,
+              "type": "text"
+            },
+            "list": {
+              "properties": {
+                "contributions": {
+                  "type": "long"
+                },
+                "name": {
+                  "ignore_above": 1024,
+                  "type": "keyword"
+                }
+              },
+              "type": "nested"
+            }
+          }
+        },
+        "downloads": {
+          "properties": {
+            "error": {
+              "norms": false,
+              "type": "text"
+            },
+            "releases": {
+              "properties": {
+                "downloads": {
+                  "type": "long"
+                },
+                "id": {
+                  "ignore_above": 1024,
+                  "type": "keyword"
+                },
+                "name": {
+                  "ignore_above": 1024,
+                  "type": "keyword"
+                }
+              },
+              "type": "nested"
+            },
+            "total_downloads": {
+              "type": "long"
+            }
+          }
+        },
+        "fork_list": {
+          "properties": {
+            "count": {
+              "type": "long"
+            },
+            "error": {
+              "norms": false,
+              "type": "text"
+            },
+            "list": {
+              "properties": {
+                "forks": {
+                  "type": "long"
+                },
+                "network": {
+                  "type": "long"
+                },
+                "open_issues": {
+                  "type": "long"
+                },
+                "owner": {
+                  "ignore_above": 1024,
+                  "type": "keyword"
+                },
+                "repo": {
+                  "ignore_above": 1024,
+                  "type": "keyword"
+                },
+                "size": {
+                  "type": "long"
+                },
+                "stargazers": {
+                  "type": "long"
+                },
+                "subscribers": {
+                  "type": "long"
+                },
+                "watchers": {
+                  "type": "long"
+                }
+              },
+              "type": "nested"
+            }
+          }
+        },
         "forks": {
           "type": "long"
+        },
+        "languages": {
+          "properties": {
+            "count": {
+              "type": "long"
+            },
+            "error": {
+              "norms": false,
+              "type": "text"
+            },
+            "list": {
+              "properties": {
+                "bytes": {
+                  "type": "long"
+                },
+                "name": {
+                  "ignore_above": 1024,
+                  "type": "keyword"
+                },
+                "ratio": {
+                  "type": "float"
+                }
+              },
+              "type": "nested"
+            }
+          }
+        },
+        "license": {
+          "properties": {
+            "key": {
+              "ignore_above": 1024,
+              "type": "keyword"
+            },
+            "name": {
+              "ignore_above": 1024,
+              "type": "keyword"
+            },
+            "path": {
+              "ignore_above": 1024,
+              "type": "keyword"
+            },
+            "sha": {
+              "ignore_above": 1024,
+              "type": "keyword"
+            },
+            "spdx_id": {
+              "ignore_above": 1024,
+              "type": "keyword"
+            }
+          }
         },
         "meta": {
           "properties": {
@@ -81,12 +250,33 @@
           "type": "long"
         },
         "owner": {
-          "norms": false,
-          "type": "text"
+          "ignore_above": 1024,
+          "type": "keyword"
+        },
+        "participation": {
+          "properties": {
+            "all": {
+              "type": "long"
+            },
+            "community": {
+              "type": "long"
+            },
+            "error": {
+              "norms": false,
+              "type": "text"
+            },
+            "owner": {
+              "type": "long"
+            },
+            "period": {
+              "ignore_above": 1024,
+              "type": "keyword"
+            }
+          }
         },
         "repo": {
-          "norms": false,
-          "type": "text"
+          "ignore_above": 1024,
+          "type": "keyword"
         },
         "size": {
           "type": "long"

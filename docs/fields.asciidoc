@@ -128,33 +128,99 @@ None
 
 
 [float]
-=== repo
-
-type: text
-
-required: True
-
-Repository name
-
-
-[float]
-=== owner
-
-type: text
-
-required: True
-
-Repository owner
-
-
-[float]
-=== stargazers
+=== branch_list.count
 
 type: integer
 
-required: True
+Number of branches
 
-Current stargazers count
+
+[float]
+=== branch_list.error
+
+type: text
+
+Error message when failing to retrieve branches
+
+
+[float]
+=== branch_list.list
+
+type: nested
+
+List of branches
+
+
+[float]
+=== contributor_list.count
+
+type: integer
+
+Number of countributors
+
+
+[float]
+=== contributor_list.list
+
+type: nested
+
+List of countributors
+
+
+[float]
+=== contributor_list.error
+
+type: text
+
+Error message when failing to retrieve countributors
+
+
+[float]
+=== downloads.releases
+
+type: nested
+
+Number of downloads per releases
+
+
+[float]
+=== downloads.total_downloads
+
+type: integer
+
+Total number of downloads for all releases
+
+
+[float]
+=== downloads.error
+
+type: text
+
+Error message when failing to retrieve downloads
+
+
+[float]
+=== fork_list.count
+
+type: integer
+
+Number of forks
+
+
+[float]
+=== fork_list.error
+
+type: text
+
+Error message when failing to retrieve forks
+
+
+[float]
+=== fork_list.list
+
+type: nested
+
+List of forks
 
 
 [float]
@@ -164,17 +230,72 @@ type: integer
 
 required: True
 
-Current forks count
+Number of forks
 
 
 [float]
-=== watchers
+=== languages.count
+
+type: integer
+
+Number of programming languages used in this repo
+
+
+[float]
+=== languages.error
+
+type: text
+
+Error message when failing to retrieve programming languages
+
+
+[float]
+=== languages.list
+
+type: nested
+
+List of programming languages used in this repo
+
+
+[float]
+== license Fields
+
+License information
+
+
+[float]
+=== license.key
+
+type: keyword
+
+[float]
+=== license.name
+
+type: keyword
+
+[float]
+=== license.path
+
+type: keyword
+
+[float]
+=== license.sha
+
+type: keyword
+
+[float]
+=== license.spdx_id
+
+type: keyword
+
+[float]
+=== network
 
 type: integer
 
 required: True
 
-Current watchers count
+Current network count
 
 
 [float]
@@ -188,23 +309,55 @@ Current open issues count
 
 
 [float]
-=== subscribers
+=== owner
 
-type: integer
+type: keyword
 
 required: True
 
-Current subscribers count
+Repository owner
 
 
 [float]
-=== network
+== participation Fields
+
+Participation data
+
+
+
+[float]
+=== participation.all
 
 type: integer
 
+[float]
+=== participation.community
+
+type: integer
+
+[float]
+=== participation.owner
+
+type: integer
+
+[float]
+=== participation.period
+
+type: keyword
+
+[float]
+=== participation.error
+
+type: text
+
+[float]
+=== repo
+
+type: keyword
+
 required: True
 
-Current network count
+Repository name
 
 
 [float]
@@ -215,5 +368,35 @@ type: integer
 required: True
 
 Current repo size (bytes)
+
+
+[float]
+=== stargazers
+
+type: integer
+
+required: True
+
+Current stargazers count
+
+
+[float]
+=== subscribers
+
+type: integer
+
+required: True
+
+Current subscribers count
+
+
+[float]
+=== watchers
+
+type: integer
+
+required: True
+
+Current watchers count
 
 
