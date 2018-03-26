@@ -196,7 +196,6 @@ func (bt *Githubbeat) newFullRepoEvent(ctx context.Context, repo *github.Reposit
 		}
 	}
 
-	addIf("license", bt.collectLicenseInfo, bt.config.License.Enabled)
 	addIf("fork_list", bt.collectForkInfo, bt.config.Forks.Enabled)
 	addIf("contributor_list", bt.getContributions, bt.config.Contributors.Enabled)
 	addIf("branch_list", bt.getBranches, bt.config.Branches.Enabled)
@@ -208,6 +207,12 @@ func (bt *Githubbeat) newFullRepoEvent(ctx context.Context, repo *github.Reposit
 }
 
 func (bt *Githubbeat) extractRepoData(repo *github.Repository) common.MapStr {
+	license := common.MapStr {
+		"key": repo.GetLicense().GetKey(),
+		"name": repo.GetLicense().GetName(),
+		"spdx_id": repo.GetLicense().GetSPDXID(),
+	}
+
 	return common.MapStr{
 		"repo":        repo.GetName(),
 		"owner":       repo.Owner.GetLogin(),
@@ -218,6 +223,7 @@ func (bt *Githubbeat) extractRepoData(repo *github.Repository) common.MapStr {
 		"subscribers": repo.GetSubscribersCount(),
 		"network":     repo.GetNetworkCount(),
 		"size":        repo.GetSize(),
+		"license":     license,
 	}
 }
 
@@ -251,27 +257,6 @@ func (bt *Githubbeat) collectForkInfo(owner, repository string, ctx context.Cont
 	}
 
 	return createListMapStr(forkInfo, err, bt.config.Forks.List)
-}
-
-func (bt *Githubbeat) collectLicenseInfo(owner, repository string, ctx context.Context) common.MapStr {
-	license, _, err := bt.ghClient.Repositories.License(ctx, owner, repository)
-
-	return appendError(bt.extractLicenseData(license), err)
-}
-
-func (bt *Githubbeat) extractLicenseData(repositoryLicense *github.RepositoryLicense) common.MapStr {
-	out := common.MapStr{
-		"path": repositoryLicense.GetPath(),
-		"sha":  repositoryLicense.GetSHA(),
-	}
-
-	if license := repositoryLicense.GetLicense(); license != nil {
-		out["key"] = license.GetKey()
-		out["name"] = license.GetName()
-		out["spdx_id"] = license.GetSPDXID()
-	}
-
-	return out
 }
 
 func (bt *Githubbeat) collectParticipation(owner, repository string, ctx context.Context) common.MapStr {

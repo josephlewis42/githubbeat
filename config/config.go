@@ -13,7 +13,6 @@ type Config struct {
 	AccessToken string        `config:"access_token"`
 
 	Forks         ListConfig     `config:"forks"`
-	License       ExtendedConfig `config:"license"`
 	Contributors  ListConfig     `config:"contributors"`
 	Branches      ListConfig     `config:"branches"`
 	Languages     ListConfig     `config:"languages"`
@@ -34,7 +33,6 @@ var DefaultConfig = Config{
 	Period:        30 * time.Second,
 	JobTimeout:    10 * time.Second,
 	Forks:         ListConfig{false, false},
-	License:       ExtendedConfig{true},
 	Contributors:  ListConfig{true, true},
 	Branches:      ListConfig{true, false},
 	Languages:     ListConfig{true, true},

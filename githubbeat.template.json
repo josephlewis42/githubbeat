@@ -127,6 +127,18 @@
                 "forks": {
                   "type": "long"
                 },
+                "license.key": {
+                  "ignore_above": 1024,
+                  "type": "keyword"
+                },
+                "license.name": {
+                  "ignore_above": 1024,
+                  "type": "keyword"
+                },
+                "license.spdx_id": {
+                  "ignore_above": 1024,
+                  "type": "keyword"
+                },
                 "network": {
                   "type": "long"
                 },
@@ -194,14 +206,6 @@
               "type": "keyword"
             },
             "name": {
-              "ignore_above": 1024,
-              "type": "keyword"
-            },
-            "path": {
-              "ignore_above": 1024,
-              "type": "keyword"
-            },
-            "sha": {
               "ignore_above": 1024,
               "type": "keyword"
             },

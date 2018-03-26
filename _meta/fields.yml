@@ -102,6 +102,15 @@
         - name: watchers
           type: integer
           required: true
+        - name: license.key
+          type: keyword
+          required: true
+        - name: license.name
+          type: keyword
+          required: true
+        - name: license.spdx_id
+          type: keyword
+          required: true
     - name: forks
       type: integer
       required: true
@@ -129,21 +138,21 @@
         - name: ratio
           type: float
           required: true
-    - name: license
-      type: group
-      description:
-        License information
-      fields:
-        - name: key
-          type: keyword
-        - name: name
-          type: keyword
-        - name: path
-          type: keyword
-        - name: sha
-          type: keyword
-        - name: spdx_id
-          type: keyword
+    - name: license.key
+      type: keyword
+      required: true
+      description: >
+        The SPDX license key: https://spdx.org/
+    - name: license.name
+      type: keyword
+      required: true
+      description: >
+        Human readable license name
+    - name: license.spdx_id
+      type: keyword
+      required: true
+      description: >
+        The SPDX license ID: https://spdx.org/
     - name: network
       type: integer
       required: true

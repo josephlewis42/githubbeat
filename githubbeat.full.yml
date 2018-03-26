@@ -23,9 +23,6 @@ githubbeat:
   # If the attribute is a list it will automatically include a count of the elements in the list.
   # If you enable the .list option it will also dump out the contents of the list.
 
-  # Should we enable pulling license info?
-  license.enabled: true
-
   # Should we enable counting forks? By default this is off because it's part of the basic
   # repository information.
   forks.enabled: false
