@@ -258,35 +258,34 @@ List of programming languages used in this repo
 
 
 [float]
-== license Fields
-
-License information
-
-
-[float]
 === license.key
 
 type: keyword
+
+required: True
+
+The SPDX license key: https://spdx.org/
+
 
 [float]
 === license.name
 
 type: keyword
 
-[float]
-=== license.path
+required: True
 
-type: keyword
+Human readable license name
 
-[float]
-=== license.sha
-
-type: keyword
 
 [float]
 === license.spdx_id
 
 type: keyword
+
+required: True
+
+The SPDX license ID: https://spdx.org/
+
 
 [float]
 === network

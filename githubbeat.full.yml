@@ -18,6 +18,40 @@ githubbeat:
   # Access token to use for authentication
   access_token: ""
 
+  # The following are attributes that will make additional API calls for each repository.
+  # The `enabled` property authorizes the extra API call(s).
+  # If the attribute is a list it will automatically include a count of the elements in the list.
+  # If you enable the .list option it will also dump out the contents of the list.
+
+  # Should we enable counting forks? By default this is off because it's part of the basic
+  # repository information.
+  forks.enabled: false
+  forks.list: false
+
+  # contributors gets who contributed to the repository and a count of their contributions.
+  contributors.enabled: true
+  contributors.list: true
+
+  # Names and hashes of the branches in the project.
+  branches.enabled: true
+  branches.list: false
+
+  # The languages used in this repository, the number of bytes and
+  # proportion of the total they make up.
+  languages.enabled: true
+  languages.list: true
+
+  # Information about how many commits the community and the author
+  # have made in the past year
+  participation.enabled: true
+
+  # Downloads is the number of downloads for each release.
+  # These are a sum of individual release files e.g. linux-x86-64 + linux-x86 + source
+  # Downloads includes a sum the downloads over all releases.
+  downloads.enabled: true
+  downloads.list: false
+
+
 #================================ General ======================================
 
 # The name of the shipper that publishes the network data. It can be used to group

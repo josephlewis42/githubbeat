@@ -5,3 +5,4 @@
 /githubbeat
 /githubbeat.test
 *.pyc
+*~
