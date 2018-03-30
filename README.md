@@ -1,6 +1,6 @@
 # Githubbeat
 
-[![Build Status](https://travis-ci.org/jlevesy/githubbeat.svg?branch=master)](https://travis-ci.org/jlevesy/githubbeat)
+[![Build Status](https://travis-ci.org/josephlewis42/githubbeat.svg?branch=master)](https://travis-ci.org/josephlewis42/githubbeat) [![Go Report Card](https://goreportcard.com/badge/github.com/josephlewis42/githubbeat)](https://goreportcard.com/report/github.com/josephlewis42/githubbeat) 
 
 This is currently a work in progress.
 
