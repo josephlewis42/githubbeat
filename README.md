@@ -1,6 +1,10 @@
 # Githubbeat
 
-[![Build Status](https://travis-ci.org/josephlewis42/githubbeat.svg?branch=master)](https://travis-ci.org/josephlewis42/githubbeat) [![Go Report Card](https://goreportcard.com/badge/github.com/josephlewis42/githubbeat)](https://goreportcard.com/report/github.com/josephlewis42/githubbeat) 
+[![Build Status](https://travis-ci.org/josephlewis42/githubbeat.svg?branch=master)](https://travis-ci.org/josephlewis42/githubbeat) 
+[![Go Report Card](https://goreportcard.com/badge/github.com/josephlewis42/githubbeat)](https://goreportcard.com/report/github.com/josephlewis42/githubbeat) 
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
+
 
 This repository is a fork of [jlevesy's original githubbeat](github.com/jlevesy/githubbeat) that adds new capabilities while maintaining backwards formatting compatability so it can be a drop-in replacement.
 
@@ -33,18 +37,20 @@ Githubbeat supports the following metrics:
 
 TODO
 
-## Todo
+## License
 
-- [x] Write a proof of concept
-- [x] Enable CI
-- [x] Open a PR to add Githubbeat to the community beats [#4723](https://github.com/elastic/beats/pull/4723).
-- [ ] Write unit tests and integration tests
-- [ ] Setup Delivery pipeline in order to publish new releases of githubbeat automatically through Github.
-  - Targets
-    - DEB 32/64
-    - RPM 32/64
-    - OSX
-    - Docker image
-- [ ] Setup a test environment using docker-compose with githubbeat, es & kibana
-- [ ] Build a githubbeat kibana dashboard
-- [ ] Write documentation about how to use the beat
+```
+Copyright (c) 2016 Julien Levesy
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+```
