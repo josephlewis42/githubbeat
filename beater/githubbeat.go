@@ -15,7 +15,7 @@ import (
 
 	"github.com/google/go-github/github"
 
-	"github.com/jlevesy/githubbeat/config"
+	"github.com/josephlewis42/githubbeat/config"
 )
 
 // Githubbeat collects github repositories statistics
@@ -207,9 +207,9 @@ func (bt *Githubbeat) newFullRepoEvent(ctx context.Context, repo *github.Reposit
 }
 
 func (bt *Githubbeat) extractRepoData(repo *github.Repository) common.MapStr {
-	license := common.MapStr {
-		"key": repo.GetLicense().GetKey(),
-		"name": repo.GetLicense().GetName(),
+	license := common.MapStr{
+		"key":     repo.GetLicense().GetKey(),
+		"name":    repo.GetLicense().GetName(),
 		"spdx_id": repo.GetLicense().GetSPDXID(),
 	}
 

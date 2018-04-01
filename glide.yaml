@@ -1,4 +1,4 @@
-package: github.com/jlevesy/githubbeat
+package: github.com/josephlewis42/githubbeat
 import:
 - package: github.com/elastic/beats
   version: "5.5"

@@ -1,5 +1,5 @@
 BEAT_NAME=githubbeat
-BEAT_PATH=github.com/jlevesy/githubbeat
+BEAT_PATH=github.com/josephlewis42/githubbeat
 BEAT_GOPATH=$(firstword $(subst :, ,${GOPATH}))
 BEAT_URL=https://${BEAT_PATH}
 SYSTEM_TESTS=false
