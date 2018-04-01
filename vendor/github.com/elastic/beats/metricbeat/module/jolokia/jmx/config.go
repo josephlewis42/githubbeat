@@ -10,6 +10,7 @@ type JMXMapping struct {
 type Attribute struct {
 	Attr  string
 	Field string
+	Event string
 }
 
 // RequestBlock is used to build the request blocks of the following format:
@@ -37,13 +38,25 @@ type RequestBlock struct {
 	Attribute []string `json:"attribute"`
 }
 
-func buildRequestBodyAndMapping(mappings []JMXMapping) ([]byte, map[string]string, error) {
+type attributeMappingKey struct {
+	mbean, attr string
+}
 
-	responseMapping := map[string]string{}
-	blocks := []RequestBlock{}
+// AttributeMapping contains the mapping information between attributes in Jolokia
+// responses and fields in metricbeat events
+type AttributeMapping map[attributeMappingKey]Attribute
+
+// Get the mapping options for the attribute of an mbean
+func (m AttributeMapping) Get(mbean, attr string) (Attribute, bool) {
+	a, found := m[attributeMappingKey{mbean, attr}]
+	return a, found
+}
+
+func buildRequestBodyAndMapping(mappings []JMXMapping) ([]byte, AttributeMapping, error) {
+	responseMapping := make(AttributeMapping)
+	var blocks []RequestBlock
 
 	for _, mapping := range mappings {
-
 		rb := RequestBlock{
 			Type:  "read",
 			MBean: mapping.MBean,
@@ -51,7 +64,7 @@ func buildRequestBodyAndMapping(mappings []JMXMapping) ([]byte, map[string]strin
 
 		for _, attribute := range mapping.Attributes {
 			rb.Attribute = append(rb.Attribute, attribute.Attr)
-			responseMapping[mapping.MBean+"_"+attribute.Attr] = attribute.Field
+			responseMapping[attributeMappingKey{mapping.MBean, attribute.Attr}] = attribute
 		}
 		blocks = append(blocks, rb)
 	}

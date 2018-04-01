@@ -6,11 +6,10 @@ services:
 language: go
 
 go:
-  - 1.8.3
+  - "1.10.x"
 
 os:
   - linux
-  - osx
 
 env:
   matrix:

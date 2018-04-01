@@ -11,7 +11,6 @@ import (
 	"github.com/elastic/beats/libbeat/beat"
 	"github.com/elastic/beats/libbeat/common"
 	"github.com/elastic/beats/libbeat/logp"
-	"github.com/elastic/beats/libbeat/publisher"
 
 	"github.com/google/go-github/github"
 
@@ -23,7 +22,7 @@ type Githubbeat struct {
 	done     chan struct{}
 	config   config.Config
 	ghClient *github.Client
-	client   publisher.Client
+	client   beat.Client
 }
 
 // New creates  a new instance of a GithubBeat
@@ -43,7 +42,11 @@ func New(b *beat.Beat, cfg *common.Config) (beat.Beater, error) {
 func (bt *Githubbeat) Run(b *beat.Beat) error {
 	logp.Info("githubbeat is running! Hit CTRL-C to stop it.")
 
-	bt.client = b.Publisher.Connect()
+	var err error
+	bt.client, err = b.Publisher.Connect()
+	if err != nil {
+		return err
+	}
 
 	ghClient, err := newGithubClient(bt.config.AccessToken)
 
@@ -111,7 +114,10 @@ func (bt *Githubbeat) collectOrgsEvents(ctx context.Context, orgs []string) {
 			}
 
 			for _, repo := range repos {
-				bt.client.PublishEvent(bt.newFullRepoEvent(ctx, repo))
+				bt.client.Publish(beat.Event{
+					Timestamp: time.Now(),
+					Fields:    bt.newFullRepoEvent(ctx, repo),
+				})
 			}
 		}(ctx, org)
 	}
@@ -134,7 +140,10 @@ func (bt *Githubbeat) collectReposEvents(ctx context.Context, repos []string) {
 				return
 			}
 
-			bt.client.PublishEvent(bt.newFullRepoEvent(ctx, res))
+			bt.client.Publish(beat.Event{
+				Timestamp: time.Now(),
+				Fields:    bt.newFullRepoEvent(ctx, res),
+			})
 		}(ctx, repoName)
 	}
 }
@@ -306,7 +315,7 @@ func (bt *Githubbeat) collectDownloads(owner, repository string, ctx context.Con
 	return common.MapStr{
 		"total_downloads": totalDownloads,
 		"releases":        out,
-		"error":           err,
+		"error":           err.Error(),
 	}
 }
 
@@ -322,7 +331,7 @@ func createListMapStr(list []common.MapStr, err error, enableList bool) common.M
 
 func appendError(input common.MapStr, err error) common.MapStr {
 	if err != nil {
-		input["error"] = err
+		input["error"] = err.Error()
 	}
 
 	return input

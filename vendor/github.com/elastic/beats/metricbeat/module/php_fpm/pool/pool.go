@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/elastic/beats/libbeat/common"
-	"github.com/elastic/beats/libbeat/logp"
+	"github.com/elastic/beats/libbeat/common/cfgwarn"
 	"github.com/elastic/beats/metricbeat/helper"
 	"github.com/elastic/beats/metricbeat/mb"
 	"github.com/elastic/beats/metricbeat/mb/parse"
@@ -39,10 +39,15 @@ type MetricSet struct {
 
 // New create a new instance of the MetricSet
 func New(base mb.BaseMetricSet) (mb.MetricSet, error) {
-	logp.Warn("BETA: The php-fpm pool metricset is beta")
+	cfgwarn.Beta("The php_fpm pool metricset is beta")
+
+	http, err := helper.NewHTTP(base)
+	if err != nil {
+		return nil, err
+	}
 	return &MetricSet{
 		base,
-		helper.NewHTTP(base),
+		http,
 	}, nil
 }
 
@@ -59,5 +64,6 @@ func (m *MetricSet) Fetch() (common.MapStr, error) {
 		return nil, fmt.Errorf("error parsing json: %v", err)
 	}
 
-	return schema.Apply(stats), nil
+	data, _ := schema.Apply(stats)
+	return data, nil
 }

@@ -4,46 +4,55 @@ This file is generated! See _meta/fields.yml and scripts/generate_field_docs.py
 ////
 
 [[exported-fields]]
-= Exported Fields
+= Exported fields
 
 [partintro]
 
 --
-This document describes the fields that are exported by Githubbeat. They are
+This document describes the fields that are exported by githubbeat. They are
 grouped in the following categories:
 
 * <<exported-fields-beat>>
 * <<exported-fields-cloud>>
+* <<exported-fields-docker-processor>>
 * <<exported-fields-githubbeat>>
+* <<exported-fields-host-processor>>
+* <<exported-fields-kubernetes-processor>>
 
 --
 [[exported-fields-beat]]
-== Beat Fields
+== Beat fields
 
 Contains common beat fields available in all event types.
 
 
 
 [float]
-=== beat.name
+=== `beat.name`
 
 The name of the Beat sending the log messages. If the Beat name is set in the configuration file, then that value is used. If it is not set, the hostname is used. To set the Beat name, use the `name` option in the configuration file.
 
 
 [float]
-=== beat.hostname
+=== `beat.hostname`
 
 The hostname as returned by the operating system on which the Beat is running.
 
 
 [float]
-=== beat.version
+=== `beat.timezone`
+
+The timezone as returned by the operating system on which the Beat is running.
+
+
+[float]
+=== `beat.version`
 
 The version of the beat that generated this event.
 
 
 [float]
-=== @timestamp
+=== `@timestamp`
 
 type: date
 
@@ -57,28 +66,59 @@ The timestamp when the event log record was generated.
 
 
 [float]
-=== tags
+=== `tags`
 
 Arbitrary tags that can be set per Beat and per transaction type.
 
 
 [float]
-=== fields
+=== `fields`
 
-type: dict
+type: object
 
 Contains user configurable fields.
 
 
+[float]
+== error fields
+
+Error fields containing additional info in case of errors.
+
+
+
+[float]
+=== `error.message`
+
+type: text
+
+Error message.
+
+
+[float]
+=== `error.code`
+
+type: long
+
+Error code.
+
+
+[float]
+=== `error.type`
+
+type: keyword
+
+Error type.
+
+
 [[exported-fields-cloud]]
-== Cloud Provider Metadata Fields
+== Cloud provider metadata fields
 
 Metadata from cloud providers added by the add_cloud_metadata processor.
 
 
 
 [float]
-=== meta.cloud.provider
+=== `meta.cloud.provider`
 
 example: ec2
 
@@ -86,13 +126,19 @@ Name of the cloud provider. Possible values are ec2, gce, or digitalocean.
 
 
 [float]
-=== meta.cloud.instance_id
+=== `meta.cloud.instance_id`
 
 Instance ID of the host machine.
 
 
 [float]
-=== meta.cloud.machine_type
+=== `meta.cloud.instance_name`
+
+Instance name of the host machine.
+
+
+[float]
+=== `meta.cloud.machine_type`
 
 example: t2.medium
 
@@ -100,7 +146,7 @@ Machine type of the host machine.
 
 
 [float]
-=== meta.cloud.availability_zone
+=== `meta.cloud.availability_zone`
 
 example: us-east-1c
 
@@ -108,7 +154,7 @@ Availability zone in which this host is running.
 
 
 [float]
-=== meta.cloud.project_id
+=== `meta.cloud.project_id`
 
 example: project-x
 
@@ -116,19 +162,59 @@ Name of the project in Google Cloud.
 
 
 [float]
-=== meta.cloud.region
+=== `meta.cloud.region`
 
 Region in which this host is running.
 
 
+[[exported-fields-docker-processor]]
+== Docker fields
+
+Docker stats collected from Docker.
+
+
+
+
+[float]
+=== `docker.container.id`
+
+type: keyword
+
+Unique container id.
+
+
+[float]
+=== `docker.container.image`
+
+type: keyword
+
+Name of the image the container was built on.
+
+
+[float]
+=== `docker.container.name`
+
+type: keyword
+
+Container name.
+
+
+[float]
+=== `docker.container.labels`
+
+type: object
+
+Image labels.
+
+
 [[exported-fields-githubbeat]]
-== githubbeat Fields
+== githubbeat fields
 
 None
 
 
 [float]
-=== branch_list.count
+=== `branch_list.count`
 
 type: integer
 
@@ -136,7 +222,7 @@ Number of branches
 
 
 [float]
-=== branch_list.error
+=== `branch_list.error`
 
 type: text
 
@@ -144,7 +230,7 @@ Error message when failing to retrieve branches
 
 
 [float]
-=== branch_list.list
+=== `branch_list.list`
 
 type: nested
 
@@ -152,7 +238,7 @@ List of branches
 
 
 [float]
-=== contributor_list.count
+=== `contributor_list.count`
 
 type: integer
 
@@ -160,7 +246,7 @@ Number of countributors
 
 
 [float]
-=== contributor_list.list
+=== `contributor_list.list`
 
 type: nested
 
@@ -168,7 +254,7 @@ List of countributors
 
 
 [float]
-=== contributor_list.error
+=== `contributor_list.error`
 
 type: text
 
@@ -176,7 +262,7 @@ Error message when failing to retrieve countributors
 
 
 [float]
-=== downloads.releases
+=== `downloads.releases`
 
 type: nested
 
@@ -184,7 +270,7 @@ Number of downloads per releases
 
 
 [float]
-=== downloads.total_downloads
+=== `downloads.total_downloads`
 
 type: integer
 
@@ -192,7 +278,7 @@ Total number of downloads for all releases
 
 
 [float]
-=== downloads.error
+=== `downloads.error`
 
 type: text
 
@@ -200,7 +286,7 @@ Error message when failing to retrieve downloads
 
 
 [float]
-=== fork_list.count
+=== `fork_list.count`
 
 type: integer
 
@@ -208,7 +294,7 @@ Number of forks
 
 
 [float]
-=== fork_list.error
+=== `fork_list.error`
 
 type: text
 
@@ -216,7 +302,7 @@ Error message when failing to retrieve forks
 
 
 [float]
-=== fork_list.list
+=== `fork_list.list`
 
 type: nested
 
@@ -224,7 +310,7 @@ List of forks
 
 
 [float]
-=== forks
+=== `forks`
 
 type: integer
 
@@ -234,7 +320,7 @@ Number of forks
 
 
 [float]
-=== languages.count
+=== `languages.count`
 
 type: integer
 
@@ -242,7 +328,7 @@ Number of programming languages used in this repo
 
 
 [float]
-=== languages.error
+=== `languages.error`
 
 type: text
 
@@ -250,7 +336,7 @@ Error message when failing to retrieve programming languages
 
 
 [float]
-=== languages.list
+=== `languages.list`
 
 type: nested
 
@@ -258,7 +344,7 @@ List of programming languages used in this repo
 
 
 [float]
-=== license.key
+=== `license.key`
 
 type: keyword
 
@@ -268,7 +354,7 @@ The SPDX license key: https://spdx.org/
 
 
 [float]
-=== license.name
+=== `license.name`
 
 type: keyword
 
@@ -278,7 +364,7 @@ Human readable license name
 
 
 [float]
-=== license.spdx_id
+=== `license.spdx_id`
 
 type: keyword
 
@@ -288,7 +374,7 @@ The SPDX license ID: https://spdx.org/
 
 
 [float]
-=== network
+=== `network`
 
 type: integer
 
@@ -298,7 +384,7 @@ Current network count
 
 
 [float]
-=== open_issues
+=== `open_issues`
 
 type: integer
 
@@ -308,7 +394,7 @@ Current open issues count
 
 
 [float]
-=== owner
+=== `owner`
 
 type: keyword
 
@@ -318,39 +404,39 @@ Repository owner
 
 
 [float]
-== participation Fields
+== participation fields
 
 Participation data
 
 
 
 [float]
-=== participation.all
+=== `participation.all`
 
 type: integer
 
 [float]
-=== participation.community
+=== `participation.community`
 
 type: integer
 
 [float]
-=== participation.owner
+=== `participation.owner`
 
 type: integer
 
 [float]
-=== participation.period
+=== `participation.period`
 
 type: keyword
 
 [float]
-=== participation.error
+=== `participation.error`
 
 type: text
 
 [float]
-=== repo
+=== `repo`
 
 type: keyword
 
@@ -360,7 +446,7 @@ Repository name
 
 
 [float]
-=== size
+=== `size`
 
 type: integer
 
@@ -370,7 +456,7 @@ Current repo size (bytes)
 
 
 [float]
-=== stargazers
+=== `stargazers`
 
 type: integer
 
@@ -380,7 +466,7 @@ Current stargazers count
 
 
 [float]
-=== subscribers
+=== `subscribers`
 
 type: integer
 
@@ -390,12 +476,132 @@ Current subscribers count
 
 
 [float]
-=== watchers
+=== `watchers`
 
 type: integer
 
 required: True
 
 Current watchers count
+
+
+[[exported-fields-host-processor]]
+== Host fields
+
+Info collected for the host machine.
+
+
+
+
+[float]
+=== `host.hostname`
+
+type: keyword
+
+Hostname.
+
+
+[float]
+=== `host.id`
+
+type: keyword
+
+Unique host id.
+
+
+[float]
+=== `host.architecture`
+
+type: keyword
+
+Host architecture (e.g. x86_64, arm, ppc, mips).
+
+
+[float]
+=== `host.os.platform`
+
+type: keyword
+
+OS platform (e.g. centos, ubuntu, windows).
+
+
+[float]
+=== `host.os.version`
+
+type: keyword
+
+OS version.
+
+
+[float]
+=== `host.os.family`
+
+type: keyword
+
+OS family (e.g. redhat, debian, freebsd, windows).
+
+
+[[exported-fields-kubernetes-processor]]
+== Kubernetes fields
+
+Kubernetes metadata added by the kubernetes processor
+
+
+
+
+[float]
+=== `kubernetes.pod.name`
+
+type: keyword
+
+Kubernetes pod name
+
+
+[float]
+=== `kubernetes.namespace`
+
+type: keyword
+
+Kubernetes namespace
+
+
+[float]
+=== `kubernetes.node.name`
+
+type: keyword
+
+Kubernetes node name
+
+
+[float]
+=== `kubernetes.labels`
+
+type: object
+
+Kubernetes labels map
+
+
+[float]
+=== `kubernetes.annotations`
+
+type: object
+
+Kubernetes annotations map
+
+
+[float]
+=== `kubernetes.container.name`
+
+type: keyword
+
+Kubernetes container name
+
+
+[float]
+=== `kubernetes.container.image`
+
+type: keyword
+
+Kubernetes container image
 
 

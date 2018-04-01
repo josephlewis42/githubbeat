@@ -1,0 +1,413 @@
+
+- key: beat
+  title: Beat
+  description: >
+    Contains common beat fields available in all event types.
+  fields:
+
+    - name: beat.name
+      description: >
+        The name of the Beat sending the log messages. If the Beat name is
+        set in the configuration file, then that value is used. If it is not
+        set, the hostname is used. To set the Beat name, use the `name`
+        option in the configuration file.
+    - name: beat.hostname
+      description: >
+        The hostname as returned by the operating system on which the Beat is
+        running.
+    - name: beat.timezone
+      description: >
+        The timezone as returned by the operating system on which the Beat is
+        running.
+    - name: beat.version
+      description: >
+        The version of the beat that generated this event.
+
+    - name: "@timestamp"
+      type: date
+      required: true
+      format: date
+      example: August 26th 2016, 12:35:53.332
+      description: >
+        The timestamp when the event log record was generated.
+
+    - name: tags
+      description: >
+        Arbitrary tags that can be set per Beat and per transaction
+        type.
+
+    - name: fields
+      type: object
+      object_type: keyword
+      description: >
+        Contains user configurable fields.
+
+    - name: error
+      type: group
+      description: >
+        Error fields containing additional info in case of errors.
+      fields:
+        - name: message
+          type: text
+          description: >
+            Error message.
+        - name: code
+          type: long
+          description: >
+            Error code.
+        - name: type
+          type: keyword
+          description: >
+            Error type.
+- key: cloud
+  title: Cloud provider metadata
+  description: >
+    Metadata from cloud providers added by the add_cloud_metadata processor.
+  fields:
+
+    - name: meta.cloud.provider
+      example: ec2
+      description: >
+        Name of the cloud provider. Possible values are ec2, gce, or digitalocean.
+
+    - name: meta.cloud.instance_id
+      description: >
+        Instance ID of the host machine.
+
+    - name: meta.cloud.instance_name
+      description: >
+        Instance name of the host machine.
+
+    - name: meta.cloud.machine_type
+      example: t2.medium
+      description: >
+        Machine type of the host machine.
+
+    - name: meta.cloud.availability_zone
+      example: us-east-1c
+      description: >
+        Availability zone in which this host is running.
+
+    - name: meta.cloud.project_id
+      example: project-x
+      description: >
+        Name of the project in Google Cloud.
+
+    - name: meta.cloud.region
+      description: >
+        Region in which this host is running.
+- key: docker
+  title: Docker
+  description: >
+    Docker stats collected from Docker.
+  short_config: false
+  anchor: docker-processor
+  fields:
+    - name: docker
+      type: group
+      fields:
+        - name: container.id
+          type: keyword
+          description: >
+            Unique container id.
+        - name: container.image
+          type: keyword
+          description: >
+            Name of the image the container was built on.
+        - name: container.name
+          type: keyword
+          description: >
+            Container name.
+        - name: container.labels
+          type: object
+          object_type: keyword
+          description: >
+            Image labels.
+- key: host
+  title: Host
+  description: >
+    Info collected for the host machine.
+  anchor: host-processor
+  fields:
+    - name: host
+      type: group
+      fields:
+        - name: hostname
+          type: keyword
+          description: >
+            Hostname.
+        - name: id
+          type: keyword
+          description: >
+            Unique host id.
+        - name: architecture
+          type: keyword
+          description: >
+            Host architecture (e.g. x86_64, arm, ppc, mips).
+        - name: os.platform
+          type: keyword
+          description: >
+            OS platform (e.g. centos, ubuntu, windows).
+        - name: os.version
+          type: keyword
+          description: >
+            OS version.
+        - name: os.family
+          type: keyword
+          description: >
+            OS family (e.g. redhat, debian, freebsd, windows).
+- key: kubernetes
+  title: Kubernetes
+  description: >
+    Kubernetes metadata added by the kubernetes processor
+  short_config: false
+  anchor: kubernetes-processor
+  fields:
+    - name: kubernetes
+      type: group
+      fields:
+        - name: pod.name
+          type: keyword
+          description: >
+            Kubernetes pod name
+
+        - name: namespace
+          type: keyword
+          description: >
+            Kubernetes namespace
+
+        - name: node.name
+          type: keyword
+          description: >
+            Kubernetes node name
+
+        - name: labels
+          type: object
+          description: >
+            Kubernetes labels map
+
+        - name: annotations
+          type: object
+          description: >
+            Kubernetes annotations map
+
+        - name: container.name
+          type: keyword
+          description: >
+            Kubernetes container name
+
+        - name: container.image
+          type: keyword
+          description: >
+            Kubernetes container image
+- key: githubbeat
+  title: githubbeat
+  description:
+  fields:
+    - name: branch_list.count
+      type: integer
+      description: >
+        Number of branches
+    - name: branch_list.error
+      type: text
+      description: >
+        Error message when failing to retrieve branches
+    - name: branch_list.list
+      type: nested
+      description: >
+        List of branches
+      fields:
+        - name: name
+          type: keyword
+          required: true
+        - name: sha
+          type: keyword
+          required: true
+    - name: contributor_list.count
+      type: integer
+      description: >
+        Number of countributors
+    - name: contributor_list.list
+      type: nested
+      description: >
+        List of countributors
+      fields:
+        - name: name
+          type: keyword
+          required: true
+        - name: contributions
+          type: integer
+          required: true
+    - name: contributor_list.error
+      type: text
+      description: >
+        Error message when failing to retrieve countributors
+    - name: downloads.releases
+      type: nested
+      description: >
+        Number of downloads per releases
+      fields:
+        - name: id
+          type: keyword
+          required: true
+        - name: name
+          type: keyword
+          required: true
+        - name: downloads
+          type: integer
+          required: true
+    - name: downloads.total_downloads
+      type: integer
+      description: >
+        Total number of downloads for all releases
+    - name: downloads.error
+      type: text
+      description: >
+        Error message when failing to retrieve downloads
+    - name: fork_list.count
+      type: integer
+      description: >
+        Number of forks
+    - name: fork_list.error
+      type: text
+      description: >
+        Error message when failing to retrieve forks
+    - name: fork_list.list
+      type: nested
+      description: >
+        List of forks
+      fields:
+        - name: forks
+          type: integer
+          required: true
+        - name: network
+          type: integer
+          required: true
+        - name: open_issues
+          type: integer
+          required: true
+        - name: owner
+          type: keyword
+          required: true
+        - name: repo
+          type: keyword
+          required: true
+        - name: size
+          type: integer
+          required: true
+        - name: stargazers
+          type: integer
+          required: true
+        - name: subscribers
+          type: integer
+          required: true
+        - name: watchers
+          type: integer
+          required: true
+        - name: license.key
+          type: keyword
+          required: true
+        - name: license.name
+          type: keyword
+          required: true
+        - name: license.spdx_id
+          type: keyword
+          required: true
+    - name: forks
+      type: integer
+      required: true
+      description: >
+        Number of forks
+    - name: languages.count
+      type: integer
+      description: >
+        Number of programming languages used in this repo
+    - name: languages.error
+      type: text
+      description: >
+        Error message when failing to retrieve programming languages
+    - name: languages.list
+      type: nested
+      description: >
+        List of programming languages used in this repo
+      fields:
+        - name: bytes
+          type: integer
+          required: true
+        - name: name
+          type: keyword
+          required: true
+        - name: ratio
+          type: float
+          required: true
+    - name: license.key
+      type: keyword
+      required: true
+      description: >
+        The SPDX license key: https://spdx.org/
+    - name: license.name
+      type: keyword
+      required: true
+      description: >
+        Human readable license name
+    - name: license.spdx_id
+      type: keyword
+      required: true
+      description: >
+        The SPDX license ID: https://spdx.org/
+    - name: network
+      type: integer
+      required: true
+      description: >
+        Current network count
+    - name: open_issues
+      type: integer
+      required: true
+      description: >
+        Current open issues count
+    - name: owner
+      type: keyword
+      required: true
+      description: >
+        Repository owner
+    - name: participation
+      type: group
+      required: true
+      description: >
+        Participation data
+      fields:
+        - name: all
+          type: integer
+        - name: community
+          type: integer
+        - name: owner
+          type: integer
+        - name: period
+          type: keyword
+        - name: error
+          type: text
+    - name: repo
+      type: keyword
+      required: true
+      description: >
+        Repository name
+    - name: size
+      type: integer
+      required: true
+      description: >
+        Current repo size (bytes)
+    - name: stargazers
+      type: integer
+      required: true
+      description: >
+        Current stargazers count
+    - name: subscribers
+      type: integer
+      required: true
+      description: >
+        Current subscribers count
+    - name: watchers
+      type: integer
+      required: true
+      description: >
+        Current watchers count

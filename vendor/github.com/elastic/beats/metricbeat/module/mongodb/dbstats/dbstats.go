@@ -27,30 +27,22 @@ func init() {
 // multiple fetch calls.
 type MetricSet struct {
 	mb.BaseMetricSet
-	mongoSession *mgo.Session
+	dialInfo *mgo.DialInfo
 }
 
 // New creates a new instance of the MetricSet
 // Part of new is also setting up the configuration by processing additional
 // configuration entries if needed.
 func New(base mb.BaseMetricSet) (mb.MetricSet, error) {
-	logp.Warn("EXPERIMENTAL: The %v %v metricset is experimental", base.Module().Name(), base.Name())
-
 	dialInfo, err := mgo.ParseURL(base.HostData().URI)
 	if err != nil {
 		return nil, err
 	}
 	dialInfo.Timeout = base.Module().Config().Timeout
 
-	// instantiate direct connections to each of the configured Mongo hosts
-	mongoSession, err := mongodb.NewDirectSession(dialInfo)
-	if err != nil {
-		return nil, err
-	}
-
 	return &MetricSet{
 		BaseMetricSet: base,
-		mongoSession:  mongoSession,
+		dialInfo:      dialInfo,
 	}, nil
 }
 
@@ -61,8 +53,15 @@ func (m *MetricSet) Fetch() ([]common.MapStr, error) {
 	// events is the list of events collected from each of the databases.
 	var events []common.MapStr
 
+	// instantiate direct connections to each of the configured Mongo hosts
+	mongoSession, err := mongodb.NewDirectSession(m.dialInfo)
+	if err != nil {
+		return nil, err
+	}
+	defer mongoSession.Close()
+
 	// Get the list of databases names, which we'll use to call db.stats() on each
-	dbNames, err := m.mongoSession.DatabaseNames()
+	dbNames, err := mongoSession.DatabaseNames()
 	if err != nil {
 		logp.Err("Error retrieving database names from Mongo instance")
 		return events, err
@@ -70,7 +69,7 @@ func (m *MetricSet) Fetch() ([]common.MapStr, error) {
 
 	// for each database, call db.stats() and append to events
 	for _, dbName := range dbNames {
-		db := m.mongoSession.DB(dbName)
+		db := mongoSession.DB(dbName)
 
 		result := common.MapStr{}
 
@@ -79,7 +78,8 @@ func (m *MetricSet) Fetch() ([]common.MapStr, error) {
 			logp.Err("Failed to retrieve stats for db %s", dbName)
 			continue
 		}
-		events = append(events, eventMapping(result))
+		data, _ := schema.Apply(result)
+		events = append(events, data)
 	}
 
 	if len(events) == 0 {

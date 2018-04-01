@@ -1,0 +1,73 @@
+{
+	"comment": "",
+	"ignore": "test",
+	"package": [
+		{
+			"checksumSHA1": "cOQgCkx6YL7aYm6NteGRh8WK8cQ=",
+			"path": "github.com/google/go-github/github",
+			"revision": "437797734d06eec5394734a84cb5b59c82a66ee6",
+			"revisionTime": "2018-03-29T18:54:43Z"
+		},
+		{
+			"checksumSHA1": "p3IB18uJRs4dL2K5yx24MrLYE9A=",
+			"path": "github.com/google/go-querystring/query",
+			"revision": "53e6ce116135b80d037921a7fdd5138cf32d7a8a",
+			"revisionTime": "2017-01-11T10:11:55Z"
+		},
+		{
+			"checksumSHA1": "EOT+855GBCb1QG0sBy2xhB3c5+A=",
+			"path": "golang.org/x/oauth2",
+			"revision": "fdc9e635145ae97e6c2cb777c48305600cf515cb",
+			"revisionTime": "2018-03-14T17:21:01Z"
+		},
+		{
+			"checksumSHA1": "SYinbTOs4JSXuw1R5RhiT+NnKNc=",
+			"path": "golang.org/x/oauth2/internal",
+			"revision": "fdc9e635145ae97e6c2cb777c48305600cf515cb",
+			"revisionTime": "2018-03-14T17:21:01Z"
+		},
+		{
+			"checksumSHA1": "Ps3j6G40DujNZf3dL6e2ysx7Pk0=",
+			"path": "google.golang.org/appengine/internal",
+			"revision": "ad39d7fab7c60b2493fdc318c3d2cdb2128f92a4",
+			"revisionTime": "2018-03-29T18:26:30Z"
+		},
+		{
+			"checksumSHA1": "PJ+aP3+eOZn+ckAb4NZPHNAxESk=",
+			"path": "google.golang.org/appengine/internal/base",
+			"revision": "ad39d7fab7c60b2493fdc318c3d2cdb2128f92a4",
+			"revisionTime": "2018-03-29T18:26:30Z"
+		},
+		{
+			"checksumSHA1": "2JYgCZVGTTsBIhh29M5ItZGXQ7E=",
+			"path": "google.golang.org/appengine/internal/datastore",
+			"revision": "ad39d7fab7c60b2493fdc318c3d2cdb2128f92a4",
+			"revisionTime": "2018-03-29T18:26:30Z"
+		},
+		{
+			"checksumSHA1": "Tmunm9UyiE/Bs+JDU2ej2jTsFoY=",
+			"path": "google.golang.org/appengine/internal/log",
+			"revision": "ad39d7fab7c60b2493fdc318c3d2cdb2128f92a4",
+			"revisionTime": "2018-03-29T18:26:30Z"
+		},
+		{
+			"checksumSHA1": "ZZYm/rh5ssupiYTO/dazGw/IWZM=",
+			"path": "google.golang.org/appengine/internal/remote_api",
+			"revision": "ad39d7fab7c60b2493fdc318c3d2cdb2128f92a4",
+			"revisionTime": "2018-03-29T18:26:30Z"
+		},
+		{
+			"checksumSHA1": "bTGqlontu6VG532l5otdWy6f6m4=",
+			"path": "google.golang.org/appengine/internal/urlfetch",
+			"revision": "ad39d7fab7c60b2493fdc318c3d2cdb2128f92a4",
+			"revisionTime": "2018-03-29T18:26:30Z"
+		},
+		{
+			"checksumSHA1": "akOV9pYnCbcPA8wJUutSQVibdyg=",
+			"path": "google.golang.org/appengine/urlfetch",
+			"revision": "ad39d7fab7c60b2493fdc318c3d2cdb2128f92a4",
+			"revisionTime": "2018-03-29T18:26:30Z"
+		}
+	],
+	"rootPath": "github.com/josephlewis42/githubbeat"
+}
