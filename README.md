@@ -6,7 +6,7 @@
 
 
 
-This repository is a fork of [jlevesy's original githubbeat](github.com/jlevesy/githubbeat) that adds new capabilities while maintaining backwards formatting compatability so it can be a drop-in replacement.
+This repository is a fork of [jlevesy's original githubbeat](https://github.com/jlevesy/githubbeat) that adds new capabilities while maintaining backwards formatting compatability so it can be a drop-in replacement.
 
 ## Why Githubbeat ?
 
