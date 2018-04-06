@@ -1,4 +1,3 @@
-
 // The following directive is necessary to make the package coherent:
 
 // +build ignore
@@ -21,53 +20,54 @@ func main() {
 	defer f.Close()
 
 	clientListTemplate.Execute(f, struct {
-		Timestamp time.Time
-		PageableLists     []repositoryClientListItem
+		Timestamp     time.Time
+		PageableLists []repositoryClientListItem
+		OtherLists    []repositoryClientListItem
+		Collectors    []collector
 	}{
 		Timestamp: time.Now(),
-		PageableLists:   []repositoryClientListItem{
-			{"ListBranches", "ListOptions", "Branch"},	
-			{"ListForks", "RepositoryListForksOptions", "Repository"},
-			{"ListComments", "ListOptions", "RepositoryComment"},
-			{"ListCommits", "CommitsListOptions", "RepositoryCommit"},
-			{"ListContributors", "ListContributorsOptions", "Contributor"},
-			{"ListDeployments", "DeploymentsListOptions", "Deployment"},
-			{"ListHooks", "ListOptions", "Hook"},
-			{"ListInvitations", "ListOptions", "RepositoryInvitation"},
-			{"ListKeys", "ListOptions", "Key"},
-			{"ListPagesBuilds", "ListOptions", "PagesBuild"},
-			{"ListProjects", "ProjectListOptions", "Project"},
-			{"ListReleases", "ListOptions", "RepositoryRelease"},
-			{"ListTags", "ListOptions", "RepositoryTag"},
-			{"ListTeams", "ListOptions", "Team"},
-			{"ListCollaborators", "ListCollaboratorsOptions", "User"},
+		PageableLists: []repositoryClientListItem{
+			{"ListBranches", "ListOptions", "[]*github.Branch"},
+			{"ListForks", "RepositoryListForksOptions", "[]*github.Repository"},
+			{"ListComments", "ListOptions", "[]*github.RepositoryComment"},
+			{"ListCommits", "CommitsListOptions", "[]*github.RepositoryCommit"},
+			{"ListContributors", "ListContributorsOptions", "[]*github.Contributor"},
+			{"ListDeployments", "DeploymentsListOptions", "[]*github.Deployment"},
+			{"ListHooks", "ListOptions", "[]*github.Hook"},
+			{"ListInvitations", "ListOptions", "[]*github.RepositoryInvitation"},
+			{"ListKeys", "ListOptions", "[]*github.Key"},
+			{"ListPagesBuilds", "ListOptions", "[]*github.PagesBuild"},
+			{"ListProjects", "ProjectListOptions", "[]*github.Project"},
+			{"ListReleases", "ListOptions", "[]*github.RepositoryRelease"},
+			{"ListTags", "ListOptions", "[]*github.RepositoryTag"},
+			{"ListTeams", "ListOptions", "[]*github.Team"},
+			{"ListCollaborators", "ListCollaboratorsOptions", "[]*github.User"},
+		},
+		OtherLists: []repositoryClientListItem{
+			{"ListParticipation", "", "*github.RepositoryParticipation"},
+			{"ListLanguages", "", "map[string]int"},
+
+			// Unused as of now
+			{"ListContributorsStats", "", "[]*github.ContributorStats"},
+			{"ListPunchCard", "", "[]*github.PunchCard"},
+			{"ListTrafficPaths", "", "[]*github.TrafficPath"},
+			{"ListTrafficReferrers", "", "[]*github.TrafficReferrer"},
+			{"ListAllTopics", "", "[]string"},
+			{"ListCodeFrequency", "", "[]*github.WeeklyStats"},
+			{"ListCommitActivity", "", "[]*github.WeeklyCommitActivity"},
+		},
+		Collectors: []collector{
+			{Lister: "ListReleases", ConfigName: "Downloads", IsPageable: true, IsListResult: false},
+			{Lister: "ListParticipation", ConfigName: "Participation", IsPageable: false, IsListResult: false},
+			{Lister: "ListForks", ConfigName: "Forks", IsPageable: true, IsListResult: true},
+			{Lister: "ListLanguages", ConfigName: "Languages", IsPageable: false, IsListResult: true},
+			{Lister: "ListContributors", ConfigName: "Contributors", IsPageable: true, IsListResult: true},
+			{Lister: "ListBranches", ConfigName: "Branches", IsPageable: true, IsListResult: true},
 		},
 	})
 }
 
 //func (s *RepositoriesService) ListByOrg(ctx context.Context, org string, opt *RepositoryListByOrgOptions) ([]*Repository, *Response, error)
-
-/**
-func (s *RepositoriesService) ListAllTopics(ctx context.Context, owner, repo string) ([]string, *Response, error)
-func (s *RepositoriesService) ListCodeFrequency(ctx context.Context, owner, repo string) ([]*WeeklyStats, *Response, error)
-func (s *RepositoriesService) ListCommitActivity(ctx context.Context, owner, repo string) ([]*WeeklyCommitActivity, *Response, error)
- error)
-func (s *RepositoriesService) ListContributorsStats(ctx context.Context, owner, repo string) ([]*ContributorStats, *Response, error)
-func (s *RepositoriesService) ListLanguages(ctx context.Context, owner string, repo string) (map[string]int, *Response, error)
-func (s *RepositoriesService) ListParticipation(ctx context.Context, owner, repo string) (*RepositoryParticipation, *Response, error)
-func (s *RepositoriesService) ListPunchCard(ctx context.Context, owner, repo string) ([]*PunchCard, *Response, error)
-func (s *RepositoriesService) ListReleaseAssets(ctx context.Context, owner, repo string, id int64, opt *ListOptions) ([]*ReleaseAsset, *Response, error)
-func (s *RepositoriesService) ListTrafficPaths(ctx context.Context, owner, repo string) ([]*TrafficPath, *Response, error)
-func (s *RepositoriesService) ListTrafficReferrers(ctx context.Context, owner, repo string) ([]*TrafficReferrer, *Response, error)
-
-
-
-func (s *RepositoriesService) ListStatuses(ctx context.Context, owner, repo, ref string, opt *ListOptions) ([]*RepoStatus, *Response, error)
-func (s *RepositoriesService) ListTrafficViews(ctx context.Context, owner, repo string, opt *TrafficBreakdownOptions) (*TrafficViews, *Response, error)
-func (s *RepositoriesService) ListRequiredStatusChecksContexts(ctx context.Context, owner, repo, branch string) (contexts []string, resp *Response, err error)
-func (s *RepositoriesService) ListCommitComments(ctx context.Context, owner, repo, sha string, opt *ListOptions) ([]*RepositoryComment, *Response,
-func (s *RepositoriesService) ListDeploymentStatuses(ctx context.Context, owner, repo string, deployment int64, opt *ListOptions) ([]*DeploymentStatus, *Response, error)
-**/
 
 func die(err error) {
 	if err != nil {
@@ -75,12 +75,30 @@ func die(err error) {
 	}
 }
 
-
 type repositoryClientListItem struct {
-	Function 	string
-	OptionType 	string
-	ResultType 	string
+	Function   string
+	OptionType string
+	ResultType string
 }
+
+type collector struct {
+	Lister       string
+	ConfigName   string
+	IsPageable   bool
+	IsListResult bool
+}
+
+/**
+func (bt *Githubbeat) collectForkInfo(rc *repositoryClient) common.MapStr {
+	forks, err := rc.ListForks(bt.config.Forks.Max)
+
+	forkInfo := []common.MapStr{}
+	for _, repo := range forks {
+		forkInfo = append(forkInfo, extractRepoData(repo))
+	}
+
+	return createListMapStr(forkInfo, err, bt.config.Forks.List)
+}**/
 
 var clientListTemplate = template.Must(template.New("").Parse(`// Code generated by go generate; DO NOT EDIT.
 // This file was generated by robots at
@@ -90,15 +108,16 @@ package beater
 
 import (
     "github.com/google/go-github/github"
+	"github.com/elastic/beats/libbeat/common"
 )
 
 
 {{- range .PageableLists}}
 
-func (rc *repositoryClient) {{.Function}}(max int) ([]*github.{{.ResultType}}, error) {
+func (rc *repositoryClient) {{.Function}}(max int) ({{.ResultType}}, error) {
 	opt := &github.{{.OptionType}}{}
 
-	var results []*github.{{.ResultType}}
+	var results {{.ResultType}}
 
 	for {
 		list, resp, err := rc.client.Repositories.{{.Function}}(rc.ctx, rc.GetOwner(), rc.GetName(), opt)
@@ -115,6 +134,35 @@ func (rc *repositoryClient) {{.Function}}(max int) ([]*github.{{.ResultType}}, e
 	}
 
 	return results, nil
+}
+
+{{- end }}
+
+{{- range .OtherLists}}
+
+func (rc *repositoryClient) {{.Function}}() ({{.ResultType}}, error) {
+	result, _, err := rc.client.Repositories.{{.Function}}(rc.ctx, rc.GetOwner(), rc.GetName())
+	return result, err
+}
+
+{{- end }}
+
+
+{{- range .Collectors}}
+
+func (bt *Githubbeat) collect{{.ConfigName}}(rc *repositoryClient) common.MapStr {
+	if ! bt.config.{{.ConfigName}}.Enabled {
+		return nil
+	}
+
+	rawResults, err := rc.{{.Lister}}({{if .IsPageable}}bt.config.{{.ConfigName}}.Max{{end}})
+
+	formatted := bt.extract{{.ConfigName}}(rawResults, err)
+	{{if .IsListResult}}
+	return 	createListMapStr(formatted, err, bt.config.{{.ConfigName}}.List)
+	{{else}}
+	return appendError(formatted, err)
+	{{end}}
 }
 
 {{- end }}

@@ -2,7 +2,6 @@ package beater
 
 //go:generate go run gen-lists.go
 
-
 import (
 	"context"
 	"fmt"
@@ -44,6 +43,7 @@ func New(b *beat.Beat, cfg *common.Config) (beat.Beater, error) {
 // Run runs the beat
 func (bt *Githubbeat) Run(b *beat.Beat) error {
 	logp.Info("githubbeat is running! Hit CTRL-C to stop it.")
+	logp.Info("configuration: %+v", bt.config)
 
 	var err error
 	bt.client, err = b.Publisher.Connect()
@@ -51,13 +51,10 @@ func (bt *Githubbeat) Run(b *beat.Beat) error {
 		return err
 	}
 
-	ghClient, err := newGithubClient(bt.config.AccessToken)
-
+	bt.ghClient, err = newGithubClient(bt.config.AccessToken)
 	if err != nil {
 		return err
 	}
-
-	bt.ghClient = ghClient
 
 	ticker := time.NewTicker(bt.config.Period)
 
@@ -151,10 +148,8 @@ func (bt *Githubbeat) collectReposEvents(ctx context.Context, repos []string) {
 	}
 }
 
-func (bt *Githubbeat) getContributions(ctx context.Context, owner, repository string) common.MapStr {
+func (bt *Githubbeat) extractContributors(contributors []*github.Contributor, err error) []common.MapStr {
 	users := []common.MapStr{}
-
-	contributors, _, err := bt.ghClient.Repositories.ListContributors(ctx, owner, repository, nil)
 	if err == nil {
 		for _, contributor := range contributors {
 			userInfo := common.MapStr{
@@ -166,14 +161,13 @@ func (bt *Githubbeat) getContributions(ctx context.Context, owner, repository st
 		}
 	}
 
-	return createListMapStr(users, err, bt.config.Contributors.List)
+	return users
 }
 
-func (bt *Githubbeat) getBranches(ctx context.Context, owner, repository string) common.MapStr {
+func (bt *Githubbeat) extractBranches(branches []*github.Branch, err error) []common.MapStr {
 	// name:author pairs
 	branchList := []common.MapStr{}
 
-	branches, _, err := bt.ghClient.Repositories.ListBranches(ctx, owner, repository, nil)
 	if err == nil {
 		for _, branch := range branches {
 			branchInfo := common.MapStr{
@@ -185,40 +179,36 @@ func (bt *Githubbeat) getBranches(ctx context.Context, owner, repository string)
 		}
 	}
 
-	return createListMapStr(branchList, err, bt.config.Branches.List)
+	return branchList
 }
 
-type collector func(ctx context.Context, owner, repository string) common.MapStr
+type collector func(repositoryClient *repositoryClient) common.MapStr
 
 func (bt *Githubbeat) newFullRepoEvent(ctx context.Context, repo *github.Repository) common.MapStr {
-
-	data := bt.extractRepoData(repo)
+	rc := NewRepositoryClient(ctx, bt.ghClient, repo)
+	data := extractRepoData(repo)
 
 	// beat metadata
 	data["@timestamp"] = common.Time(time.Now())
 	data["type"] = "githubbeat"
 
-	// extended info
-	owner := repo.Owner.GetLogin()
-	repository := repo.GetName()
-
-	addIf := func(key string, c collector, condition bool) {
-		if condition {
-			data[key] = c(ctx, owner, repository)
+	addIf := func(key string, c collector) {
+		res := c(rc)
+		if res != nil {
+			data[key] = res
 		}
 	}
-
-	addIf("fork_list", bt.collectForkInfo, bt.config.Forks.Enabled)
-	addIf("contributor_list", bt.getContributions, bt.config.Contributors.Enabled)
-	addIf("branch_list", bt.getBranches, bt.config.Branches.Enabled)
-	addIf("languages", bt.collectLanguageInfo, bt.config.Languages.Enabled)
-	addIf("participation", bt.collectParticipation, bt.config.Participation.Enabled)
-	addIf("downloads", bt.collectDownloads, bt.config.Downloads.Enabled)
+	addIf("fork_list", bt.collectForks)
+	addIf("contributor_list", bt.collectContributors)
+	addIf("branch_list", bt.collectBranches)
+	addIf("languages", bt.collectLanguages)
+	addIf("participation", bt.collectParticipation)
+	addIf("downloads", bt.collectDownloads)
 
 	return data
 }
 
-func (bt *Githubbeat) extractRepoData(repo *github.Repository) common.MapStr {
+func extractRepoData(repo *github.Repository) common.MapStr {
 	license := common.MapStr{
 		"key":     repo.GetLicense().GetKey(),
 		"name":    repo.GetLicense().GetName(),
@@ -239,10 +229,7 @@ func (bt *Githubbeat) extractRepoData(repo *github.Repository) common.MapStr {
 	}
 }
 
-func (bt *Githubbeat) collectLanguageInfo(ctx context.Context, owner, repository string) common.MapStr {
-	langs, _, err := bt.ghClient.Repositories.ListLanguages(ctx, owner, repository)
-
-	// Enable totals so we can get a ratio
+func (bt *Githubbeat) extractLanguages(langs map[string]int, err error) []common.MapStr {
 	sum := 0
 	for _, count := range langs {
 		sum += count
@@ -257,27 +244,19 @@ func (bt *Githubbeat) collectLanguageInfo(ctx context.Context, owner, repository
 		})
 	}
 
-	return createListMapStr(out, err, bt.config.Languages.List)
+	return out
 }
 
-func (bt *Githubbeat) collectForkInfo(ctx context.Context, owner, repository string) common.MapStr {
-	forks, _, err := bt.ghClient.Repositories.ListForks(ctx, owner, repository, nil)
-
+func (bt *Githubbeat) extractForks(forks []*github.Repository, err error) []common.MapStr {
 	forkInfo := []common.MapStr{}
 	for _, repo := range forks {
-		forkInfo = append(forkInfo, bt.extractRepoData(repo))
+		forkInfo = append(forkInfo, extractRepoData(repo))
 	}
 
-	return createListMapStr(forkInfo, err, bt.config.Forks.List)
+	return forkInfo
 }
 
-func (bt *Githubbeat) collectParticipation(ctx context.Context, owner, repository string) common.MapStr {
-	participation, _, err := bt.ghClient.Repositories.ListParticipation(ctx, owner, repository)
-
-	return appendError(bt.extractParticipationData(participation), err)
-}
-
-func (bt *Githubbeat) extractParticipationData(participation *github.RepositoryParticipation) common.MapStr {
+func (bt *Githubbeat) extractParticipation(participation *github.RepositoryParticipation, err error) common.MapStr {
 	all := 0
 	owner := 0
 
@@ -294,9 +273,7 @@ func (bt *Githubbeat) extractParticipationData(participation *github.RepositoryP
 	}
 }
 
-func (bt *Githubbeat) collectDownloads(ctx context.Context, owner, repository string) common.MapStr {
-	releases, _, err := bt.ghClient.Repositories.ListReleases(ctx, owner, repository, nil)
-
+func (bt *Githubbeat) extractDownloads(releases []*github.RepositoryRelease, err error) common.MapStr {
 	totalDownloads := 0
 	out := []common.MapStr{}
 	for _, release := range releases {
@@ -318,7 +295,6 @@ func (bt *Githubbeat) collectDownloads(ctx context.Context, owner, repository st
 	return common.MapStr{
 		"total_downloads": totalDownloads,
 		"releases":        out,
-		"error":           err.Error(),
 	}
 }
 
@@ -349,41 +325,18 @@ func sumIntArray(array []int) int {
 	return sum
 }
 
-
 func NewRepositoryClient(ctx context.Context, client *github.Client, repo *github.Repository) *repositoryClient {
-	return &repositoryClient {
-		ctx: ctx,
+	return &repositoryClient{
+		ctx:    ctx,
 		client: client,
-		repo: repo,
+		repo:   repo,
 	}
 }
-	
+
 type repositoryClient struct {
-	ctx context.Context
+	ctx    context.Context
 	client *github.Client
-	repo *github.Repository
-}
-
-
-func (rc *repositoryClient) ExtractRepositoryData() common.MapStr {
-	license := common.MapStr{
-		"key":     rc.repo.GetLicense().GetKey(),
-		"name":    rc.repo.GetLicense().GetName(),
-		"spdx_id": rc.repo.GetLicense().GetSPDXID(),
-	}
-
-	return common.MapStr{
-		"repo":        rc.repo.GetName(),
-		"owner":       rc.repo.Owner.GetLogin(),
-		"stargazers":  rc.repo.GetStargazersCount(),
-		"forks":       rc.repo.GetForksCount(),
-		"watchers":    rc.repo.GetWatchersCount(),
-		"open_issues": rc.repo.GetOpenIssuesCount(),
-		"subscribers": rc.repo.GetSubscribersCount(),
-		"network":     rc.repo.GetNetworkCount(),
-		"size":        rc.repo.GetSize(),
-		"license":     license,
-	}
+	repo   *github.Repository
 }
 
 func (rc *repositoryClient) GetOwner() string {
@@ -393,4 +346,3 @@ func (rc *repositoryClient) GetOwner() string {
 func (rc *repositoryClient) GetName() string {
 	return rc.repo.GetName()
 }
-
