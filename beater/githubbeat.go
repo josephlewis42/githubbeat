@@ -1,5 +1,8 @@
 package beater
 
+//go:generate go run gen-lists.go
+
+
 import (
 	"context"
 	"fmt"
@@ -25,7 +28,7 @@ type Githubbeat struct {
 	client   beat.Client
 }
 
-// New creates  a new instance of a GithubBeat
+// New creates a new instance of a GithubBeat
 func New(b *beat.Beat, cfg *common.Config) (beat.Beater, error) {
 	config := config.DefaultConfig
 	if err := cfg.Unpack(&config); err != nil {
@@ -345,3 +348,49 @@ func sumIntArray(array []int) int {
 
 	return sum
 }
+
+
+func NewRepositoryClient(ctx context.Context, client *github.Client, repo *github.Repository) *repositoryClient {
+	return &repositoryClient {
+		ctx: ctx,
+		client: client,
+		repo: repo,
+	}
+}
+	
+type repositoryClient struct {
+	ctx context.Context
+	client *github.Client
+	repo *github.Repository
+}
+
+
+func (rc *repositoryClient) ExtractRepositoryData() common.MapStr {
+	license := common.MapStr{
+		"key":     rc.repo.GetLicense().GetKey(),
+		"name":    rc.repo.GetLicense().GetName(),
+		"spdx_id": rc.repo.GetLicense().GetSPDXID(),
+	}
+
+	return common.MapStr{
+		"repo":        rc.repo.GetName(),
+		"owner":       rc.repo.Owner.GetLogin(),
+		"stargazers":  rc.repo.GetStargazersCount(),
+		"forks":       rc.repo.GetForksCount(),
+		"watchers":    rc.repo.GetWatchersCount(),
+		"open_issues": rc.repo.GetOpenIssuesCount(),
+		"subscribers": rc.repo.GetSubscribersCount(),
+		"network":     rc.repo.GetNetworkCount(),
+		"size":        rc.repo.GetSize(),
+		"license":     license,
+	}
+}
+
+func (rc *repositoryClient) GetOwner() string {
+	return rc.repo.Owner.GetLogin()
+}
+
+func (rc *repositoryClient) GetName() string {
+	return rc.repo.GetName()
+}
+
