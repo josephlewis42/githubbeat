@@ -107,7 +107,8 @@ var clientListTemplate = template.Must(template.New("").Parse(`// Code generated
 package beater
 
 import (
-    "github.com/google/go-github/github"
+	"github.com/google/go-github/github"
+
 	"github.com/elastic/beats/libbeat/common"
 )
 
@@ -124,12 +125,12 @@ func (rc *repositoryClient) {{.Function}}(max int) ({{.ResultType}}, error) {
 		if err != nil {
 			return results, err
 		}
-		
+
 		results = append(results, list...)
 		if resp.NextPage == 0 || (len(results) >= max && max > 0) {
 			break
 		}
-		
+
 		opt.Page = resp.NextPage
 	}
 
@@ -151,18 +152,18 @@ func (rc *repositoryClient) {{.Function}}() ({{.ResultType}}, error) {
 {{- range .Collectors}}
 
 func (bt *Githubbeat) collect{{.ConfigName}}(rc *repositoryClient) common.MapStr {
-	if ! bt.config.{{.ConfigName}}.Enabled {
+	if !bt.config.{{.ConfigName}}.Enabled {
 		return nil
 	}
 
 	rawResults, err := rc.{{.Lister}}({{if .IsPageable}}bt.config.{{.ConfigName}}.Max{{end}})
 
 	formatted := bt.extract{{.ConfigName}}(rawResults, err)
-	{{if .IsListResult}}
-	return 	createListMapStr(formatted, err, bt.config.{{.ConfigName}}.List)
-	{{else}}
+{{if .IsListResult}}
+	return createListMapStr(formatted, err, bt.config.{{.ConfigName}}.List)
+{{else}}
 	return appendError(formatted, err)
-	{{end}}
+{{end}}
 }
 
 {{- end }}
