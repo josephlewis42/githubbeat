@@ -14,19 +14,27 @@ type Config struct {
 	Orgs        []string      `config:"orgs"`
 	AccessToken string        `config:"access_token"`
 
-	Forks         ListConfig     `config:"forks"`
-	Contributors  ListConfig     `config:"contributors"`
-	Branches      ListConfig     `config:"branches"`
-	Languages     ListConfig     `config:"languages"`
-	Participation ExtendedConfig `config:"participation"`
-	Downloads     ListConfig     `config:"downloads"`
+	Forks         PageableListConfig `config:"forks"`
+	Contributors  PageableListConfig `config:"contributors"`
+	Branches      PageableListConfig `config:"branches"`
+	Languages     ListConfig         `config:"languages"`
+	Participation ExtendedConfig     `config:"participation"`
+	Downloads     PageableListConfig `config:"downloads"`
 }
 
 // ListConfig has configuration for metrics that have list outputs
-// such as contributors.
+// such as languages.
 type ListConfig struct {
 	Enabled bool `config:"enabled"`
 	List    bool `config:"list"`
+}
+
+// PageableListConfig has configuration for metrics that have list
+// outputs that require paging to fetch all of them such as contributors.
+type PageableListConfig struct {
+	Enabled bool `config:"enabled"`
+	List    bool `config:"list"`
+	Max     int  `config:"max_elements"`
 }
 
 // ExtendedConfig contains configuration options for metrics
@@ -42,10 +50,10 @@ type ExtendedConfig struct {
 var DefaultConfig = Config{
 	Period:        30 * time.Second,
 	JobTimeout:    10 * time.Second,
-	Forks:         ListConfig{false, false},
-	Contributors:  ListConfig{true, true},
-	Branches:      ListConfig{true, false},
+	Forks:         PageableListConfig{false, false, -1},
+	Contributors:  PageableListConfig{true, true, -1},
+	Branches:      PageableListConfig{true, false, -1},
 	Languages:     ListConfig{true, true},
 	Participation: ExtendedConfig{true},
-	Downloads:     ListConfig{true, false},
+	Downloads:     PageableListConfig{true, false, -1},
 }

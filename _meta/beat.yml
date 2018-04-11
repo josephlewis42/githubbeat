@@ -22,19 +22,29 @@ githubbeat:
   # The `enabled` property authorizes the extra API call(s).
   # If the attribute is a list it will automatically include a count of the elements in the list.
   # If you enable the .list option it will also dump out the contents of the list.
+  #
+  # The max attribute applies to attributes which make paged (possibly more than one) API calls.
+  # Max is the maximum number of _elements_ you want to fetch (not pages). 
+  # The actual number returned is rounded to the nearest page e.g. if you set 15 items max, but 
+  # GitHub uses pages of size 10, you'll get 20 items.
+  # The beat uses Github's default page sizes.
+  # A value of -1 means to fetch all pages.
 
   # Should we enable counting forks? By default this is off because it's part of the basic
   # repository information.
   forks.enabled: false
   forks.list: false
+  forks.max: -1
 
   # contributors gets who contributed to the repository and a count of their contributions.
   contributors.enabled: true
   contributors.list: true
+  contributors.max: -1
 
   # Names and hashes of the branches in the project.
   branches.enabled: true
   branches.list: false
+  branches.max: -1
 
   # The languages used in this repository, the number of bytes and
   # proportion of the total they make up.
@@ -50,4 +60,5 @@ githubbeat:
   # Downloads includes a sum the downloads over all releases.
   downloads.enabled: true
   downloads.list: false
+  downloads.max: -1
 
