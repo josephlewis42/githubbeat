@@ -11,7 +11,7 @@ githubbeat:
   # Expected format is [owner]/[repo]
   repos:
       - elastic/beats
-  # List of individual organisations to watch
+  # List of individual organizations to watch
   orgs:
       - google
       - containous
@@ -22,19 +22,29 @@ githubbeat:
   # The `enabled` property authorizes the extra API call(s).
   # If the attribute is a list it will automatically include a count of the elements in the list.
   # If you enable the .list option it will also dump out the contents of the list.
+  #
+  # The max attribute applies to attributes which make paged (possibly more than one) API calls.
+  # Max is the maximum number of _elements_ you want to fetch (not pages). 
+  # The actual number returned is rounded to the nearest page e.g. if you set 15 items max, but 
+  # GitHub uses pages of size 10, you'll get 20 items.
+  # The beat uses Github's default page sizes.
+  # A value of -1 means to fetch all pages.
 
   # Should we enable counting forks? By default this is off because it's part of the basic
   # repository information.
   forks.enabled: false
   forks.list: false
+  forks.max: -1
 
   # contributors gets who contributed to the repository and a count of their contributions.
   contributors.enabled: true
   contributors.list: true
+  contributors.max: -1
 
   # Names and hashes of the branches in the project.
   branches.enabled: true
   branches.list: false
+  branches.max: -1
 
   # The languages used in this repository, the number of bytes and
   # proportion of the total they make up.
@@ -50,6 +60,22 @@ githubbeat:
   # Downloads includes a sum the downloads over all releases.
   downloads.enabled: true
   downloads.list: false
+  downloads.max: -1
+
+  # The following are attributes for fetching issues.
+  # See https://developer.github.com/v3/issues/#list-issues for full options which
+  # are summarized here.
+  issues.enabled: true
+  issues.list: true
+  issues.max: -1
+  # state is one of "open", "closed" or "all"
+  issues.state: "open"
+  # A list of labels
+  issues.labels: []
+  # What to sort results by, can be "created", "updated" or "comments"
+  issues.sort: "created"
+  # The direction of the sort, either "asc" or "desc"
+  issues.direction: "desc"
 
 
 #================================ General ======================================

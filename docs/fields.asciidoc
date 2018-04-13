@@ -286,6 +286,30 @@ Error message when failing to retrieve downloads
 
 
 [float]
+=== `issues.count`
+
+type: integer
+
+Number of issues matching the given filter
+
+
+[float]
+=== `issues.error`
+
+type: text
+
+Error message when failing to retrieve issues
+
+
+[float]
+=== `issues.list`
+
+type: nested
+
+List of filtered issues
+
+
+[float]
 === `fork_list.count`
 
 type: integer
