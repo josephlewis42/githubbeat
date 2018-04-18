@@ -20,6 +20,7 @@ type Config struct {
 	Languages     ListConfig         `config:"languages"`
 	Participation ExtendedConfig     `config:"participation"`
 	Downloads     PageableListConfig `config:"downloads"`
+	Issues        IssuesConfig       `config:"issues"`
 }
 
 // ListConfig has configuration for metrics that have list outputs
@@ -44,6 +45,18 @@ type ExtendedConfig struct {
 	Enabled bool `config:"enabled"`
 }
 
+// IssuesConfig contains specific listing options for issues belonging to
+// a repository.
+type IssuesConfig struct {
+	Enabled   bool     `config:"enabled"`
+	List      bool     `config:"list"`
+	Max       int      `config:"max_elements"`
+	State     string   `config:"state"`
+	Labels    []string `config:"labels"`
+	Sort      string   `config:"sort"`
+	Direction string   `config:"direction"`
+}
+
 // DefaultConfig has the application default configurations.
 // These attempt to be sane defaults, balanced between API
 // call count and useful information provided.
@@ -56,4 +69,5 @@ var DefaultConfig = Config{
 	Languages:     ListConfig{true, true},
 	Participation: ExtendedConfig{true},
 	Downloads:     PageableListConfig{true, false, -1},
+	Issues:        IssuesConfig{true, true, -1, "open", []string{}, "created", "desc"},
 }

@@ -264,6 +264,64 @@
       type: text
       description: >
         Error message when failing to retrieve downloads
+    - name: issues.count
+      type: integer
+      description: >
+        Number of issues matching the given filter
+    - name: issues.error
+      type: text
+      description: >
+        Error message when failing to retrieve issues
+    - name: issues.list
+      type: nested
+      description: >
+        List of filtered issues
+      fields:
+        - name: state
+          type: keyword
+          required: true
+        - name: user
+          type: keyword
+          required: true
+        - name: body
+          type: text
+          required: true
+        - name: assignee
+          type: keyword
+          required: true
+        - name: comment_count
+          type: integer
+          required: true
+        - name: created_at
+          type: date
+          required: true
+        - name: closed_at
+          type: date
+          required: false
+        - name: updated_at
+          type: date
+          required: false
+        - name: title
+          type: text
+          required: true
+        - name: locked
+          type: boolean
+          required: true
+        - name: id
+          type: long
+          required: true
+        - name: milestone
+          type: keyword
+          required: false
+        - name: labels
+          type: string
+          required: false
+        - name: is_pull_request
+          type: boolean
+          required: false
+        - name: number
+          type: integer
+          required: true
     - name: fork_list.count
       type: integer
       description: >

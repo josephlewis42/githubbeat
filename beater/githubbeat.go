@@ -204,6 +204,7 @@ func (bt *Githubbeat) newFullRepoEvent(ctx context.Context, repo *github.Reposit
 	addIf("languages", bt.collectLanguages)
 	addIf("participation", bt.collectParticipation)
 	addIf("downloads", bt.collectDownloads)
+	addIf("issues", bt.collectIssues)
 
 	return data
 }
