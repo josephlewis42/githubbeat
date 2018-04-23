@@ -83,7 +83,7 @@ func (bt *Githubbeat) Stop() {
 
 func newGithubClient(accessToken string) (*github.Client, error) {
 	if accessToken == "" {
-		logp.Info("Running in unauthentcated mode.")
+		logp.Info("Running in unauthenticated mode.")
 		return github.NewClient(nil), nil
 	}
 
