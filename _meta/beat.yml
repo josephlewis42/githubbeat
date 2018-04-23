@@ -4,17 +4,19 @@
 
 githubbeat:
   # Defines how often an event is sent to the output
-  period: 30s
+  period: 1h
+  # Should the first collection happen immediately after plugin start?
+  # if false, the duration defined by period will elapse first.
+  start_immediately: true
   # Defines how much time a fetch should at most take
   job_timeout: 10s
   # List of individual repositories to watch
   # Expected format is [owner]/[repo]
   repos:
       - elastic/beats
-  # List of individual organizations to watch
-  orgs:
-      - google
-      - containous
+  # List of individual organizations to watch.
+  # WARNING, enabling these may quickly consume your quota.
+  orgs: []
   # Access token to use for authentication
   access_token: ""
 
