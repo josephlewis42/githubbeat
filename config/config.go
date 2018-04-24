@@ -13,6 +13,7 @@ type Config struct {
 	Repos       []string      `config:"repos"`
 	Orgs        []string      `config:"orgs"`
 	AccessToken string        `config:"access_token"`
+	StartNow    bool          `config:"start_immediately"`
 
 	Forks         PageableListConfig `config:"forks"`
 	Contributors  PageableListConfig `config:"contributors"`
@@ -63,6 +64,7 @@ type IssuesConfig struct {
 var DefaultConfig = Config{
 	Period:        30 * time.Second,
 	JobTimeout:    10 * time.Second,
+	StartNow:      true,
 	Forks:         PageableListConfig{false, false, -1},
 	Contributors:  PageableListConfig{true, true, -1},
 	Branches:      PageableListConfig{true, false, -1},

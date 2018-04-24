@@ -57,6 +57,12 @@ func (bt *Githubbeat) Run(b *beat.Beat) error {
 	}
 
 	ticker := time.NewTicker(bt.config.Period)
+	timer := time.NewTimer(time.Millisecond)
+
+	// Run out the timer If the beat isn't going to start immediately.
+	if !bt.config.StartNow {
+		<-timer.C
+	}
 
 	rootCtx, cancelRootCtx := context.WithCancel(context.Background())
 
@@ -66,12 +72,14 @@ func (bt *Githubbeat) Run(b *beat.Beat) error {
 			cancelRootCtx()
 			return nil
 		case <-ticker.C:
-			logp.Info("Collecting events.")
-			jobCtx, jobCancel := context.WithTimeout(rootCtx, bt.config.JobTimeout)
-			defer jobCancel()
-			bt.collectReposEvents(jobCtx, bt.config.Repos)
-			bt.collectOrgsEvents(jobCtx, bt.config.Orgs)
+		case <-timer.C:
 		}
+
+		logp.Info("Collecting events.")
+		jobCtx, jobCancel := context.WithTimeout(rootCtx, bt.config.JobTimeout)
+		defer jobCancel()
+		bt.collectReposEvents(jobCtx, bt.config.Repos)
+		bt.collectOrgsEvents(jobCtx, bt.config.Orgs)
 	}
 }
 

@@ -4,17 +4,19 @@
 
 githubbeat:
   # Defines how often an event is sent to the output
-  period: 30s
+  period: 1h
+  # Should the first collection happen immediately after plugin start?
+  # if false, the duration defined by period will elapse first.
+  start_immediately: true
   # Defines how much time a fetch should at most take
   job_timeout: 10s
   # List of individual repositories to watch
   # Expected format is [owner]/[repo]
   repos:
       - elastic/beats
-  # List of individual organizations to watch
-  orgs:
-      - google
-      - containous
+  # List of individual organizations to watch.
+  # WARNING, enabling these may quickly consume your quota.
+  orgs: []
   # Access token to use for authentication
   access_token: ""
 
@@ -24,8 +26,8 @@ githubbeat:
   # If you enable the .list option it will also dump out the contents of the list.
   #
   # The max attribute applies to attributes which make paged (possibly more than one) API calls.
-  # Max is the maximum number of _elements_ you want to fetch (not pages). 
-  # The actual number returned is rounded to the nearest page e.g. if you set 15 items max, but 
+  # Max is the maximum number of _elements_ you want to fetch (not pages).
+  # The actual number returned is rounded to the nearest page e.g. if you set 15 items max, but
   # GitHub uses pages of size 10, you'll get 20 items.
   # The beat uses Github's default page sizes.
   # A value of -1 means to fetch all pages.
