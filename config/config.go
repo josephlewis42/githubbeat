@@ -3,7 +3,10 @@
 
 package config
 
-import "time"
+import (
+	"net/url"
+	"time"
+)
 
 // Config contains the user-settable configuration options for
 // the beat.
@@ -22,6 +25,7 @@ type Config struct {
 	Participation ExtendedConfig     `config:"participation"`
 	Downloads     PageableListConfig `config:"downloads"`
 	Issues        IssuesConfig       `config:"issues"`
+	Enterprise    EnterpriseConfig   `config:"enterprise"`
 }
 
 // ListConfig has configuration for metrics that have list outputs
@@ -56,6 +60,32 @@ type IssuesConfig struct {
 	Labels    []string `config:"labels"`
 	Sort      string   `config:"sort"`
 	Direction string   `config:"direction"`
+}
+
+// EnterpriseConfig holds settings for GitHub Enterprise.
+type EnterpriseConfig struct {
+	BaseUrl   string `config:"base_url"`
+	UploadUrl string `config:"upload_url"`
+}
+
+// GetBaseUrl parses the base URL and returns it or an error
+// Returns nils if the URL is blank
+func (e *EnterpriseConfig) GetBaseUrl() (*url.URL, error) {
+	if e.BaseUrl == "" {
+		return nil, nil
+	}
+
+	return url.Parse(e.BaseUrl)
+}
+
+// GetBaseUrl parses the base URL and returns it or an error
+// Returns nils if the URL is blank
+func (e *EnterpriseConfig) GetUploadUrl() (*url.URL, error) {
+	if e.UploadUrl == "" {
+		return nil, nil
+	}
+
+	return url.Parse(e.UploadUrl)
 }
 
 // DefaultConfig has the application default configurations.
