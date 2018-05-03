@@ -51,7 +51,7 @@ func (bt *Githubbeat) Run(b *beat.Beat) error {
 		return err
 	}
 
-	bt.ghClient, err = newGithubClient(bt.config.AccessToken)
+	bt.ghClient, err = newGithubClient(bt.config)
 	if err != nil {
 		return err
 	}
@@ -89,7 +89,36 @@ func (bt *Githubbeat) Stop() {
 	close(bt.done)
 }
 
-func newGithubClient(accessToken string) (*github.Client, error) {
+func newGithubClient(config config.Config) (*github.Client, error) {
+	client, err := setupClient(config.AccessToken)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := config.Enterprise.GetBaseUrl()
+	if err != nil {
+		return nil, err
+	}
+
+	if baseUrl != nil {
+		logp.Info("Using custom BaseUrl")
+		client.BaseURL = baseUrl
+	}
+
+	uploadUrl, err := config.Enterprise.GetUploadUrl()
+	if err != nil {
+		return nil, err
+	}
+
+	if uploadUrl != nil {
+		logp.Info("Using custom UploadUrl")
+		client.UploadURL = uploadUrl
+	}
+
+	return client, nil
+}
+
+func setupClient(accessToken string) (*github.Client, error) {
 	if accessToken == "" {
 		logp.Info("Running in unauthenticated mode.")
 		return github.NewClient(nil), nil
