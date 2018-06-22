@@ -11,7 +11,7 @@ NOTICE_FILE=NOTICE
 GOBUILD_FLAGS=-i -ldflags "-X $(BEAT_PATH)/vendor/github.com/elastic/beats/libbeat/version.buildTime=$(NOW) -X $(BEAT_PATH)/vendor/github.com/elastic/beats/libbeat/version.commit=$(COMMIT_ID)"
 GOX_OS=linux darwin windows ## @Building List of all OS to be supported by "make crosscompile".
 GOX_FLAGS=-arch="arm64 amd64"
-EXES=gcsbeat-darwin-amd64 gcsbeat-linux-amd64 gcsbeat-linux-arm64 gcsbeat-windows-amd64.exe
+EXES=githubbeat-darwin-amd64 githubbeat-linux-amd64 githubbeat-linux-arm64 githubbeat-windows-amd64.exe
 RELEASE_TEMPLATE_DIR=${BUILD_DIR}/releases/template
 
 # Path to the libbeat Makefile
