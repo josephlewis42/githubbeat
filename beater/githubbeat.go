@@ -115,6 +115,12 @@ func newGithubClient(config config.Config) (*github.Client, error) {
 		client.UploadURL = uploadUrl
 	}
 
+	// Test connection
+	ctx := context.Background()
+	if _, _, err := client.Repositories.List(ctx, "", nil); err != nil {
+		return nil, err
+	}
+
 	return client, nil
 }
 
@@ -131,13 +137,7 @@ func setupClient(accessToken string) (*github.Client, error) {
 		&oauth2.Token{AccessToken: accessToken},
 	)
 
-	client := github.NewClient(oauth2.NewClient(ctx, ts))
-
-	if _, _, err := client.Repositories.List(ctx, "", nil); err != nil {
-		return nil, err
-	}
-
-	return client, nil
+	return github.NewClient(oauth2.NewClient(ctx, ts)), nil
 }
 
 func (bt *Githubbeat) collectOrgsEvents(ctx context.Context, orgs []string) {
