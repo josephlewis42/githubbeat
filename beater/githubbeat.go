@@ -226,7 +226,6 @@ func (bt *Githubbeat) newFullRepoEvent(ctx context.Context, repo *github.Reposit
 	data := extractRepoData(repo)
 
 	// beat metadata
-	data["@timestamp"] = common.Time(time.Now())
 	data["type"] = "githubbeat"
 
 	addIf := func(key string, c collector) {
