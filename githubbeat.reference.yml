@@ -29,6 +29,10 @@ githubbeat:
   # Leave this blank if you want to connect to GitHub.com
   enterprise.upload_url: ""
 
+  # Whether or not to log HTTP reqests to standard out.
+  # This is to help you debug connection issues and SHOULD NOT be used in production.
+  log_http_requests: false
+
   # The following are attributes that will make additional API calls for each repository.
   # The `enabled` property authorizes the extra API call(s).
   # If the attribute is a list it will automatically include a count of the elements in the list.

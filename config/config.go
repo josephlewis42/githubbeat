@@ -26,6 +26,9 @@ type Config struct {
 	Downloads     PageableListConfig `config:"downloads"`
 	Issues        IssuesConfig       `config:"issues"`
 	Enterprise    EnterpriseConfig   `config:"enterprise"`
+
+	// Debugging options
+	LogHttp       bool               `config:"log_http_requests"`
 }
 
 // ListConfig has configuration for metrics that have list outputs
@@ -102,4 +105,5 @@ var DefaultConfig = Config{
 	Participation: ExtendedConfig{true},
 	Downloads:     PageableListConfig{true, false, -1},
 	Issues:        IssuesConfig{true, true, -1, "open", []string{}, "created", "desc"},
+	LogHttp:       false,
 }

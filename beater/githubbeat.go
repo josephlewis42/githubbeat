@@ -5,6 +5,7 @@ package beater
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"strings"
 	"time"
 
@@ -90,7 +91,7 @@ func (bt *Githubbeat) Stop() {
 }
 
 func newGithubClient(config config.Config) (*github.Client, error) {
-	client, err := setupClient(config.AccessToken)
+	client, err := setupClient(config)
 	if err != nil {
 		return nil, err
 	}
@@ -115,29 +116,30 @@ func newGithubClient(config config.Config) (*github.Client, error) {
 		client.UploadURL = uploadUrl
 	}
 
-	// Test connection
-	ctx := context.Background()
-	if _, _, err := client.Repositories.List(ctx, "", nil); err != nil {
-		return nil, err
-	}
-
 	return client, nil
 }
 
-func setupClient(accessToken string) (*github.Client, error) {
-	if accessToken == "" {
+func setupClient(config config.Config) (*github.Client, error) {
+	httpClient := http.DefaultClient
+
+	if config.AccessToken == "" {
 		logp.Info("Running in unauthenticated mode.")
-		return github.NewClient(nil), nil
+	} else {
+		logp.Info("Running in authentcated mode.")
+
+		ctx := context.Background()
+		ts := oauth2.StaticTokenSource(
+			&oauth2.Token{AccessToken: config.AccessToken},
+		)
+
+		httpClient = oauth2.NewClient(ctx, ts)
 	}
 
-	logp.Info("Running in authentcated mode.")
+	if config.LogHttp {
+		LogClientHttpRequests(httpClient)
+	}
 
-	ctx := context.Background()
-	ts := oauth2.StaticTokenSource(
-		&oauth2.Token{AccessToken: accessToken},
-	)
-
-	return github.NewClient(oauth2.NewClient(ctx, ts)), nil
+	return github.NewClient(httpClient), nil
 }
 
 func (bt *Githubbeat) collectOrgsEvents(ctx context.Context, orgs []string) {
