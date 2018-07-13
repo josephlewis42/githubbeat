@@ -21,11 +21,13 @@ githubbeat:
   access_token: ""
 
   # Enterprise attributes allow special functions for those running GitHub enterprise.
-  
+
   # The base URL of the API.
-  # Leave this blank if you want to connect to GitHub.com
+  # Leave this blank if you want to connect to the public GitHub.com API
+  # This URL should always end with a trailing /
+  # Some enterprise users have reported their URL to be like xxx.yyy.com/api/v3/
   enterprise.base_url: ""
-  # The upload URL of the API, typically this is the same as the base_url. 
+  # The upload URL of the API, typically this is the same as the base_url.
   # Leave this blank if you want to connect to GitHub.com
   enterprise.upload_url: ""
 
@@ -91,7 +93,6 @@ githubbeat:
   issues.sort: "created"
   # The direction of the sort, either "asc" or "desc"
   issues.direction: "desc"
-
 
 #================================ General ======================================
 
