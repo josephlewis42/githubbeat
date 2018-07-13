@@ -28,7 +28,7 @@ type Config struct {
 	Enterprise    EnterpriseConfig   `config:"enterprise"`
 
 	// Debugging options
-	LogHttp       bool               `config:"log_http_requests"`
+	LogHttp bool `config:"log_http_requests"`
 }
 
 // ListConfig has configuration for metrics that have list outputs

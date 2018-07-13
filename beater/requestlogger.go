@@ -29,7 +29,7 @@ func (rt loggingRoundTripper) RoundTrip(req *http.Request) (*http.Response, erro
 
 func LogClientHttpRequests(client *http.Client) {
 	parent := client.Transport
-	
+
 	if parent == nil {
 		parent = http.DefaultTransport
 	}
