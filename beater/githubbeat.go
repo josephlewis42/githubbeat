@@ -148,7 +148,7 @@ func (bt *Githubbeat) collectOrgsEvents(ctx context.Context, orgs []string) {
 			repos, _, err := bt.ghClient.Repositories.ListByOrg(ctx, org, nil)
 
 			if err != nil {
-				logp.Err("Failed to collect org repos listing, got :", err)
+				logp.Err("Failed to collect org repos listing, got: %v", err)
 				return
 			}
 
@@ -168,14 +168,14 @@ func (bt *Githubbeat) collectReposEvents(ctx context.Context, repos []string) {
 			r := strings.Split(repo, "/")
 
 			if len(r) != 2 {
-				logp.Err("Invalid repo name format, expected [org]/[name], got: ", repo)
+				logp.Err("Invalid repo name format, expected [org]/[name], got:  %v", repo)
 				return
 			}
 
 			res, _, err := bt.ghClient.Repositories.Get(ctx, r[0], r[1])
 
 			if err != nil {
-				logp.Err("Failed to collect event, got :", err)
+				logp.Err("Failed to collect event, got: %v", err)
 				return
 			}
 
@@ -338,7 +338,11 @@ func (bt *Githubbeat) extractDownloads(releases []*github.RepositoryRelease, err
 }
 
 func createListMapStr(list []common.MapStr, err error, enableList bool) common.MapStr {
-	out := common.MapStr{"count": len(list), "error": err}
+	errStr := ""
+	if err != nil {
+		errStr = err.Error()
+	}
+	out := common.MapStr{"count": len(list), "error": errStr}
 
 	if enableList {
 		out["list"] = list
